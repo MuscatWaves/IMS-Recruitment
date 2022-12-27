@@ -4,8 +4,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Loader from "../components/Loader";
 import ScrollToTop from "./ScrollToTop";
 
-const Login = lazy(() => import("../pages/Login"));
-const DashBoard = lazy(() => import("../pages/DashBoard"));
+// Clients
+const ClientLogin = lazy(() => import("../pages/Clients/ClientLogin"));
+const ClientRegister = lazy(() => import("../pages/Clients/ClientRegister"));
+const ClientDashBoard = lazy(() => import("../pages/Clients/ClientsDashBoard"));
+
+// Misc
 const PageNotFound = lazy(() => import("../components/NoPageFound"));
 const NotAuthorize = lazy(() => import("../components/NotAuthorize"));
 
@@ -18,8 +22,16 @@ const Routing = () => {
             <LazyMotion features={domAnimation}>
               <ScrollToTop />
               <Routes>
-                <Route path="/" element={<Login />}></Route>
-                <Route path="/dashboard" element={<DashBoard />}></Route>
+                {/* Clients */}
+                <Route path="/client" element={<ClientLogin />}></Route>
+                <Route
+                  path="/client/register"
+                  element={<ClientRegister />}
+                ></Route>
+                <Route
+                  path="/client/dashboard"
+                  element={<ClientDashBoard />}
+                ></Route>
                 <Route path="/notAuthorized" element={<NotAuthorize />}></Route>
                 <Route path="*" element={<PageNotFound />}></Route>
               </Routes>

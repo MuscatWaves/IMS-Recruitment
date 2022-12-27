@@ -1,5 +1,6 @@
 import { QueryClientProvider, QueryClient } from "react-query";
 import Routing from "./routes";
+import { ConfigProvider } from "antd";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -7,9 +8,17 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <div className="App">
-      <QueryClientProvider client={queryClient}>
-        <Routing />
-      </QueryClientProvider>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#313848",
+          },
+        }}
+      >
+        <QueryClientProvider client={queryClient}>
+          <Routing />
+        </QueryClientProvider>
+      </ConfigProvider>
     </div>
   );
 }

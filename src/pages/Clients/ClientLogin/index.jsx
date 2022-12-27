@@ -1,74 +1,33 @@
 import React, { useEffect, useState } from "react";
-import ojimage from "../../images/oj-small.png";
-import FormData from "form-data";
+import ojimage from "../../../images/oj-small.png";
 import isEmail from "validator/lib/isEmail";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { m } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Input, message } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { LockOutlined } from "@ant-design/icons";
+import { AiOutlineMail } from "react-icons/ai";
 import "./Login.css";
 
-const Login = () => {
+const ClientLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Login";
   }, []);
 
-  // console.log(process.env);
-
   const [isLoading, setLoading] = useState(false);
   const cookies = new Cookies();
 
   const handleSubmit = async (values) => {
-    // const Email = values["email"];
-    // const Password = values["password"];
-    // setLoading(true);
-    // if (!isEmail(Email)) {
-    //   message.error("Please Enter a valid Email");
-    //   setLoading(false);
-    //   return;
-    // }
-    // var bodyFormData = new FormData();
-    // bodyFormData.append("email", Email);
-    // bodyFormData.append("password", Password);
-    // bodyFormData.append("login", "login");
-    // await axios({
-    //   method: "POST",
-    //   url: `/api/recruitment/client/login`,
-    //   data: bodyFormData,
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "multipart/form-data",
-    //   },
-    // })
-    //   .then(function (response) {
-    //     if (response.status === 200 && response.data.token) {
-    //       message.success(response.data.ok);
-    //       cookies.set("token", response.data.token, {
-    //         path: "/",
-    //         maxAge: 60 * 60 * 24 * 365,
-    //       });
-    //       navigate("/dashboard");
-    //       setLoading(false);
-    //     } else {
-    //       if (response.status === 201) {
-    //         message.error(response.data.error);
-    //         setLoading(false);
-    //       } else {
-    //         message.error(`Ouch, Something went terribly wrong`);
-    //         setLoading(false);
-    //       }
-    //     }
-    //   })
-    //   .catch(function (response) {
-    //     setLoading(false);
-    //     message.error(
-    //       response.response.data.error || "Something went terribly wrong"
-    //     );
-    //   });
+    const Email = values["email"];
+    setLoading(true);
+    if (!isEmail(Email)) {
+      message.error("Please Enter a valid Email");
+      setLoading(false);
+      return;
+    }
 
     var data = JSON.stringify({
       email: values.email,
@@ -92,7 +51,7 @@ const Login = () => {
             path: "/",
             maxAge: 60 * 60 * 24 * 365,
           });
-          navigate("/dashboard");
+          navigate("/client/dashboard");
           setLoading(false);
         } else {
           if (response.status === 201) {
@@ -110,10 +69,6 @@ const Login = () => {
           response.response.data.error || "Something went terribly wrong"
         );
       });
-  };
-
-  const onSubmit = (data) => {
-    console.log(data);
   };
 
   return (
@@ -135,7 +90,7 @@ const Login = () => {
         <div className="login-image-container">
           <img className="oj-image" src={ojimage} alt={"Oman Jobs"} />
         </div>
-        <p className="login-welcome-message">Welcome back!</p>
+        <p className="login-welcome-message">Client Login</p>
         <div className="name-bodies">
           <p className="name-title">Email</p>
           <Form.Item
@@ -156,7 +111,7 @@ const Login = () => {
             normalize={(value, _prevVal, _prevVals) => value.trim()}
           >
             <Input
-              prefix={<UserOutlined className="site-form-item-icon" />}
+              prefix={<AiOutlineMail className="site-form-item-icon" />}
               placeholder="Email"
               size="large"
             />
@@ -202,9 +157,18 @@ const Login = () => {
             "Login"
           )}
         </Button>
+        <div className="flex-center small-margin-top flex-small-gap text-grey">
+          Don't have an account?
+          <span
+            className="primary-color bold pointer"
+            onClick={() => navigate("/client/register")}
+          >
+            Sign up
+          </span>
+        </div>
       </Form>
     </m.div>
   );
 };
 
-export default Login;
+export default ClientLogin;

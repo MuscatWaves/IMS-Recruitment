@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
+import { Result, Button } from "antd";
 import Waves from "../Waves";
 import { useNavigate } from "react-router-dom";
 import "./page.css";
+import Footer from "../Footer";
 
 const PageNotFound = () => {
   const navigateTo = useNavigate();
@@ -11,10 +13,26 @@ const PageNotFound = () => {
 
   return (
     <div className="not-page-found">
-      <div>No Page Found as such</div>
-      <div className="copyright text-light-grey slide-in-top-animation">
-        @ 2022 Copyright Powered by Oman Jobs
-      </div>
+      <Result
+        className="zoom-in-animation"
+        status="404"
+        title={
+          <div className="bolder" style={{ fontSize: "44px" }}>
+            {"404"}
+          </div>
+        }
+        subTitle={
+          <div className="medium-text bold">
+            {"Sorry, the page you visited does not exist."}
+          </div>
+        }
+        extra={
+          <Button type="primary" onClick={() => navigateTo("/")} size={"large"}>
+            Back To Login
+          </Button>
+        }
+      />
+      <Footer />
       <Waves />
     </div>
   );

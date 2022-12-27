@@ -6,6 +6,59 @@
   --shadow-1: 13px 13px 20px #cbced1;
   --shadow-2: -13px -13px 20px #fff;
   --background-card-color: #ecf0f3;
+  --primary-color: #313848;
+}
+
+body {
+  background: radial-gradient(
+    circle,
+    rgba(221, 221, 221, 1) 0%,
+    rgba(238, 238, 238, 1) 100%
+  );
+}
+
+/* Color */
+
+.white-color {
+  color: #fff;
+}
+
+.text-grey {
+  color: var(--grey-color);
+}
+
+.text-light-grey {
+  color: var(--light-grey-color);
+}
+
+.primary-color {
+  color: var(--primary-color);
+}
+
+/* Font Sizes */
+
+.mid-large-text {
+  font-size: 18px;
+}
+
+/* Flexing Gap */
+
+.flex-small-gap {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.flex-gap {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .small-margin-top {
@@ -14,4 +67,10 @@
 
 .bold {
   font-weight: 600;
+}
+
+/* Misc */
+
+.pointer {
+  cursor: pointer;
 }

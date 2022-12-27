@@ -1,12 +1,12 @@
 import moment from "moment";
 import Cookies from "universal-cookie";
-import { GiCancel } from "react-icons/gi";
+// import { GiCancel } from "react-icons/gi";
 import maleUserImage from "../images/male-user.png";
 import femaleUserImage from "../images/female-user.png";
 import noGenderImage from "../images/user-no-image.png";
 // import jsPDF from "jspdf";
 // import * as htmlToImage from "html-to-image";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 import axios from "axios";
 
 export const removeUnderScore = (str) => {
@@ -84,14 +84,14 @@ export const checkWhichFile = (cv) => {
   return n && n[n.length - 1];
 };
 
-export const removeCookie = (navigate) => {
+export const removeCookie = (navigate, logOut) => {
   // localStorage.removeItem("filter");
   // localStorage.removeItem("page");
   localStorage.removeItem("user");
   const cookies = new Cookies();
   cookies.set("token", "", { path: "/", expires: new Date(Date.now()) });
   // message.success("Logged Out");
-  navigate("/");
+  navigate(logOut);
 };
 
 export const checkImageIcon = (gender) => {
