@@ -1,0 +1,31 @@
+.breadcrumb-tt-main {
+  display: flex;
+  gap: 0.5rem;
+  /* padding: 0.5rem; */
+  align-items: center;
+}
+
+.breadcrumb-tt-main__caret-right {
+  display: block;
+}
+
+.breadcrumb-tt-main__caret-down {
+  display: none;
+}
+
+@media screen and (max-width: 900px) {
+  .breadcrumb-tt-main {
+    flex-direction: column;
+    padding: 0;
+    gap: 0.2;
+    margin-top: 0.5rem;
+  }
+
+  .breadcrumb-tt-main__caret-right {
+    display: none;
+  }
+
+  .breadcrumb-tt-main__caret-down {
+    display: block;
+  }
+}

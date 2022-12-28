@@ -23,6 +23,10 @@ body {
   color: #fff;
 }
 
+.orange-color {
+  color: var(--orange-color);
+}
+
 .text-grey {
   color: var(--grey-color);
 }
@@ -39,6 +43,19 @@ body {
 
 .mid-large-text {
   font-size: 18px;
+}
+
+.title-text {
+  font-size: 2em;
+  font-weight: 600;
+}
+
+.small-text {
+  font-size: 14px;
+}
+
+.very-small-text {
+  font-size: 12px;
 }
 
 /* Flexing Gap */
@@ -67,6 +84,10 @@ body {
 
 .bold {
   font-weight: 600;
+}
+
+.bolder {
+  font-weight: 700;
 }
 
 /* Misc */

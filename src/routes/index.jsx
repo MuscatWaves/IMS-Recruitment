@@ -8,6 +8,9 @@ import ScrollToTop from "./ScrollToTop";
 const ClientLogin = lazy(() => import("../pages/Clients/ClientLogin"));
 const ClientRegister = lazy(() => import("../pages/Clients/ClientRegister"));
 const ClientDashBoard = lazy(() => import("../pages/Clients/ClientsDashBoard"));
+const ClientJobOpenings = lazy(() =>
+  import("../pages/Clients/ClientJobOpenings")
+);
 
 // Misc
 const PageNotFound = lazy(() => import("../components/NoPageFound"));
@@ -32,6 +35,11 @@ const Routing = () => {
                   path="/client/dashboard"
                   element={<ClientDashBoard />}
                 ></Route>
+                <Route
+                  path="/client/jobs"
+                  element={<ClientJobOpenings />}
+                ></Route>
+                {/* Misc */}
                 <Route path="/notAuthorized" element={<NotAuthorize />}></Route>
                 <Route path="*" element={<PageNotFound />}></Route>
               </Routes>

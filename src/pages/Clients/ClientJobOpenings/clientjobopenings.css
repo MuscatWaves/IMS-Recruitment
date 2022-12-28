@@ -1,0 +1,14 @@
+.client-job-openings {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.client-filter-nav-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.774);
+}

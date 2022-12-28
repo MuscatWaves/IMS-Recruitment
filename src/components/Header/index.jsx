@@ -54,7 +54,7 @@ const Header = ({ home, logOut }) => {
         initial="hidden"
       >
         <m.div
-          className="text-light-grey bolder mid-large-text white-color"
+          className="text-light-grey mid-large-text white-color"
           variants={item}
         >{`Hi! ${user?.name}`}</m.div>
         <m.div
