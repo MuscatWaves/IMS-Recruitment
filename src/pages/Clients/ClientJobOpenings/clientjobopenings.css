@@ -12,3 +12,18 @@
   border-radius: 15px;
   background-color: rgba(255, 255, 255, 0.774);
 }
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.pagination-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #6b6b6b;
+}

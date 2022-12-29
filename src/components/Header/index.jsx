@@ -48,29 +48,31 @@ const Header = ({ home, logOut }) => {
     <div className="header">
       <Authentication />
       <m.div
-        className="flex-small-gap"
+        className="flex-gap"
         variants={container}
         animate="show"
         initial="hidden"
       >
         <m.div
-          className="text-light-grey mid-large-text white-color"
+          className="mid-large-text white-color"
           variants={item}
         >{`Hi! ${user?.name}`}</m.div>
-        <m.div
-          className="hdr-icon-button"
-          onClick={() => removeCookie(navigate, logOut)}
-          variants={item}
-        >
-          <FaPowerOff />
-        </m.div>
-        <m.div
-          className="hdr-icon-button"
-          onClick={() => navigateTo(home)}
-          variants={item}
-        >
-          <FaHome />
-        </m.div>
+        <div className="flex-small-gap">
+          <m.div
+            className="hdr-icon-button"
+            onClick={() => removeCookie(navigate, logOut)}
+            variants={item}
+          >
+            <FaPowerOff />
+          </m.div>
+          <m.div
+            className="hdr-icon-button"
+            onClick={() => navigateTo(home)}
+            variants={item}
+          >
+            <FaHome />
+          </m.div>
+        </div>
       </m.div>
       <img
         src={ojimage}

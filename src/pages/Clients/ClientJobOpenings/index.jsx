@@ -1,14 +1,25 @@
-import React, { useEffect } from "react";
-import { AnimatePresence, m } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { m } from "framer-motion";
 import Header from "../../../components/Header";
-import "./clientjobopenings.css";
+import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../ClientsDashBoard/constants";
-import { Button, Table } from "antd";
+import { Button, message, Pagination, Table } from "antd";
+import axios from "axios";
+import "./clientjobopenings.css";
 
 const ClientJobOpenings = () => {
+  const cookies = new Cookies();
+  const token = cookies.get("token");
+  const [name, setName] = useState("");
+  const [data, setData] = useState(false);
+  const [page, setPage] = useState(1);
+  const [isLoading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+
   useEffect(() => {
     document.title = "Client - Job Openings";
+    // getData(name, page);
   }, []);
 
   const navigation = [
@@ -19,6 +30,43 @@ const ClientJobOpenings = () => {
       active: true,
     },
   ];
+
+  const onChange = (page) => {
+    setPage(page);
+  };
+
+  const getData = async (name, page) => {
+    setLoading(true);
+    let config = {
+      headers: {
+        Authorization: token,
+      },
+      params: {
+        page: page,
+        search: name,
+      },
+    };
+    try {
+      const Data = await axios.get(`/api/cv`, config);
+      if (Data.status === 200) {
+        setLoading(false);
+        setData(Data.data);
+        setTotal(Data.data.TotalDisplay[0].total);
+      } else {
+        if (Data.status === 201) {
+          message.error(Data.data.error);
+          setLoading(false);
+        } else {
+          message.error("Ouch, Something Went Terribly Wrong!");
+          setLoading(false);
+        }
+      }
+    } catch (err) {
+      message.error(err.response.data.error);
+      setLoading(false);
+      setData([]);
+    }
+  };
 
   const test_data = [
     {
@@ -88,10 +136,21 @@ const ClientJobOpenings = () => {
           <Table
             dataSource={test_data}
             columns={columns}
-            // loading={isFetching}
+            loading={isLoading}
             pagination={false}
             rowKey={"id"}
           />
+          <div className="pagination">
+            <div className="pagination-total">{`Showing ${
+              page === 1 ? 1 : page * 10 - 10 + 1
+            } to ${page * 10 > total ? total : page * 10} of ${total}`}</div>
+            <Pagination
+              current={page}
+              onChange={onChange}
+              total={total}
+              showSizeChanger={false}
+            />
+          </div>
         </m.div>
       </m.div>
     </m.div>
