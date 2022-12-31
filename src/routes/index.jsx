@@ -11,6 +11,7 @@ const ClientDashBoard = lazy(() => import("../pages/Clients/ClientsDashBoard"));
 const ClientJobOpenings = lazy(() =>
   import("../pages/Clients/ClientJobOpenings")
 );
+const ClientContacts = lazy(() => import("../pages/Clients/ClientContacts"));
 
 // Misc
 const PageNotFound = lazy(() => import("../components/NoPageFound"));
@@ -38,6 +39,10 @@ const Routing = () => {
                 <Route
                   path="/client/jobs"
                   element={<ClientJobOpenings />}
+                ></Route>
+                <Route
+                  path="/client/contacts"
+                  element={<ClientContacts />}
                 ></Route>
                 {/* Misc */}
                 <Route path="/notAuthorized" element={<NotAuthorize />}></Route>

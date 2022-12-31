@@ -12,21 +12,22 @@ const ClientContacts = () => {
   const cookies = new Cookies();
   const token = cookies.get("token");
   const [name, setName] = useState("");
-  const [data, setData] = useState(false);
+  const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    document.title = "Client - Job Openings";
-    // getData(name, page);
+    document.title = "Client - Contacts";
+    getData(name, page);
+    // eslint-disable-next-line
   }, []);
 
   const navigation = [
     { id: 0, name: "Dashboard", url: "/client/dashboard" },
     {
       id: 1,
-      name: "Job Openings",
+      name: "Contacts",
       active: true,
     },
   ];
@@ -37,13 +38,10 @@ const ClientContacts = () => {
 
   const getData = async (name, page) => {
     setLoading(true);
+    setData([]);
     let config = {
       headers: {
         Authorization: token,
-      },
-      params: {
-        page: page,
-        search: name,
       },
     };
     try {
@@ -53,7 +51,7 @@ const ClientContacts = () => {
       );
       if (Data.status === 200) {
         setLoading(false);
-        setData(Data.data);
+        setData(Data.data.data);
         setTotal(Data.data.TotalDisplay[0].total);
       } else {
         if (Data.status === 201) {
@@ -65,50 +63,39 @@ const ClientContacts = () => {
         }
       }
     } catch (err) {
-      message.error(err.response.data.error);
+      console.log(err);
       setLoading(false);
-      setData([]);
     }
   };
-
-  const test_data = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "johndoe@gmail.com",
-      contact_no: "997722002",
-      industry: "IT Sector",
-    },
-    {
-      id: 2,
-      name: "Maxwell Paris",
-      email: "maxwellParis@gmail.com",
-      contact_no: "988123321",
-      industry: "Oil & Gas Sector",
-    },
-  ];
 
   const columns = [
     {
       title: "Client Name",
       render: (record) => (
         <div>
-          <div className="text-black bolder">{record.name}</div>
-          <div className="small-text text-grey">{record.email}</div>
+          <div className="text-black bold">{record.name}</div>
+          <div className="very-small-text text-grey bold">{record.email}</div>
         </div>
       ),
     },
     {
       title: "Contact No",
+      render: (record) => <div className="text-grey">{record.number}</div>,
+    },
+    {
+      title: "Job",
       render: (record) => (
-        <div className="text-grey bold">{record.contact_no}</div>
+        <div>
+          <div className="text-black bold">{record.jobtitle}</div>
+          <div className="very-small-text text-grey bold">
+            {record.department}
+          </div>
+        </div>
       ),
     },
     {
-      title: "Industry",
-      render: (record) => (
-        <div className="text-grey bold">{record.industry}</div>
-      ),
+      title: "Client",
+      render: (record) => <div className="text-grey">{record.client}</div>,
     },
   ];
 
@@ -137,7 +124,7 @@ const ClientContacts = () => {
         </m.div>
         <m.div variants={item}>
           <Table
-            dataSource={test_data}
+            dataSource={data}
             columns={columns}
             loading={isLoading}
             pagination={false}

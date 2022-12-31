@@ -13,7 +13,7 @@ export const cards = [
     id: 2,
     icon: contactsImage,
     title: "Contacts",
-    path: "/uploadcv",
+    path: "/client/contacts",
   },
   {
     id: 3,

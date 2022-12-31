@@ -31,6 +31,10 @@ body {
   color: var(--grey-color);
 }
 
+.text-black {
+  color: var(--black-color);
+}
+
 .text-light-grey {
   color: var(--light-grey-color);
 }
@@ -52,6 +56,10 @@ body {
 
 .small-text {
   font-size: 14px;
+}
+
+.medium-text {
+  font-size: 16px;
 }
 
 .very-small-text {
@@ -91,6 +99,36 @@ body {
 }
 
 /* Misc */
+
+.ant-input {
+  color: grey;
+  font-weight: 600;
+}
+
+.ant-select {
+  color: grey;
+  font-weight: 600;
+}
+
+.ant-select-selection-item {
+  color: grey;
+  font-weight: 600 !important;
+}
+
+.ant-table-thead > tr > th {
+  font-weight: 700;
+  color: #272727;
+}
+
+.ant-table table {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+.ant-form-item {
+  margin-bottom: 10px;
+}
 
 .pointer {
   cursor: pointer;
