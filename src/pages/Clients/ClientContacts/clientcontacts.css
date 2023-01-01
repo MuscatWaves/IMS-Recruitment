@@ -27,3 +27,21 @@
   font-weight: 700;
   color: #6b6b6b;
 }
+
+.client-contact-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  align-items: center;
+}
+
+.client-contact-card--first,
+.client-contact-card--second {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.client-contact-card--first {
+  align-items: flex-start;
+}

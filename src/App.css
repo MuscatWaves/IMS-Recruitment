@@ -45,6 +45,10 @@ body {
 
 /* Font Sizes */
 
+.large-text {
+  font-size: 20px;
+}
+
 .mid-large-text {
   font-size: 18px;
 }

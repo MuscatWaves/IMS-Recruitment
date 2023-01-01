@@ -4,8 +4,19 @@ import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../ClientsDashBoard/constants";
-import { Button, message, Pagination, Table } from "antd";
+import { Button, message, Modal, Pagination, Table } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import axios from "axios";
+import userImage from "../../../images/user-no-image.png";
+import {
+  FaAddressBook,
+  FaFax,
+  FaPhoneAlt,
+  FaSkype,
+  FaTwitter,
+} from "react-icons/fa";
+import { AiFillMail } from "react-icons/ai";
+import ClientContactForm from "./clientcontactcreate";
 import "./clientcontacts.css";
 
 const ClientContacts = () => {
@@ -16,12 +27,20 @@ const ClientContacts = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDetailsData, setShowDetailsData] = useState({});
+  const [isModalOpen, toggleModal] = useState(false);
+  const [editData, setEditData] = useState(null);
 
   useEffect(() => {
     document.title = "Client - Contacts";
-    getData(name, page);
+    refetch();
     // eslint-disable-next-line
   }, []);
+
+  const refetch = () => {
+    getData(name, page);
+  };
 
   const navigation = [
     { id: 0, name: "Dashboard", url: "/client/dashboard" },
@@ -34,6 +53,7 @@ const ClientContacts = () => {
 
   const onChange = (page) => {
     setPage(page);
+    getData(name, page);
   };
 
   const getData = async (name, page) => {
@@ -97,6 +117,32 @@ const ClientContacts = () => {
       title: "Client",
       render: (record) => <div className="text-grey">{record.client}</div>,
     },
+    {
+      title: "Actions",
+      render: (record) => (
+        <div className="flex-small-gap">
+          <Button
+            type="primary"
+            onClick={() => {
+              setShowDetailsData(record);
+              setShowDetailsModal(true);
+            }}
+          >
+            View Profile
+          </Button>
+          <Button
+            type="primary"
+            shape="round"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditData(record);
+              toggleModal(true);
+            }}
+          />
+        </div>
+      ),
+      width: "300px",
+    },
   ];
 
   return (
@@ -106,6 +152,83 @@ const ClientContacts = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
     >
+      {isModalOpen && (
+        <ClientContactForm
+          isModalOpen={isModalOpen}
+          setModal={toggleModal}
+          editData={editData}
+          setEditData={setEditData}
+          getData={refetch}
+        />
+      )}
+      <Modal
+        title="Contact Information"
+        open={showDetailsModal}
+        footer={false}
+        onCancel={() => {
+          setShowDetailsModal(false);
+          setShowDetailsData({});
+        }}
+        centered
+      >
+        <div className="client-contact-card">
+          <div className="client-contact-card--first">
+            <div>
+              <div className="large-text bold">{showDetailsData.name}</div>
+              <div className="medium-text text-grey">
+                {showDetailsData.jobtitle}
+              </div>
+              <div className="text-light-grey small-text">
+                {showDetailsData.description}
+              </div>
+            </div>
+            <div>
+              <div className="flex-small-gap primary-color">
+                <FaPhoneAlt className="text-grey" />
+                <div>{showDetailsData.number}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <AiFillMail className="text-grey" />
+                <div>{showDetailsData.email}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaFax className="text-grey" />
+                <div>{showDetailsData.fax}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaSkype className="text-grey" />
+                <div>{showDetailsData.skype}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaAddressBook className="text-grey" />
+                <div>
+                  {`${showDetailsData.street} ${showDetailsData.city} ${showDetailsData.state} ${showDetailsData.country}`}
+                  <span>
+                    {showDetailsData.code && `-${showDetailsData.code}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="client-contact-card--second">
+            <img src={userImage} width={150} height={150} alt={"user"} />
+            <div className="flex-small-gap">
+              <AiFillMail
+                className="pointer"
+                style={{ fontSize: "20px", color: "#c71610" }}
+              />
+              <></>
+              <FaTwitter
+                className="pointer"
+                style={{ fontSize: "20px", color: "#1DA1F2" }}
+                onClick={() =>
+                  showDetailsData.skype && window.open("https://www.google.com")
+                }
+              />
+            </div>
+          </div>
+        </div>
+      </Modal>
       <Header home={"/client/dashboard"} logOut={"/client"} />
       <m.div
         className="client-contacts"
@@ -118,7 +241,14 @@ const ClientContacts = () => {
         </m.div>
         <m.div className="client-filter-nav-header" variants={item}>
           <BreadCrumb items={navigation} />
-          <Button type="primary" size="large">
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => {
+              setEditData(null);
+              toggleModal(true);
+            }}
+          >
             + Create
           </Button>
         </m.div>
