@@ -5,7 +5,7 @@ import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../ClientsDashBoard/constants";
 import { Button, message, Modal, Pagination, Table } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import userImage from "../../../images/user-no-image.png";
 import {
@@ -31,6 +31,9 @@ const ClientContacts = () => {
   const [showDetailsData, setShowDetailsData] = useState({});
   const [isModalOpen, toggleModal] = useState(false);
   const [editData, setEditData] = useState(null);
+  const [deletionData, setDeletionData] = useState(null);
+  const [deleteModal, toggleDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     document.title = "Client - Contacts";
@@ -139,11 +142,51 @@ const ClientContacts = () => {
               toggleModal(true);
             }}
           />
+          <Button
+            type="primary"
+            shape="round"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => {
+              setDeletionData(record);
+              toggleDeleteModal(true);
+            }}
+          />
         </div>
       ),
       width: "300px",
     },
   ];
+
+  const deleteData = async () => {
+    setDeleteLoading(true);
+    await axios({
+      method: "delete",
+      url: `/api/recruitment/client/contact/${deletionData.id}`,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
+        Authorization: token,
+      },
+    })
+      .then(function (response) {
+        message.success("The data has been sucessfully deleted");
+        toggleDeleteModal(false);
+        setDeletionData("");
+        refetch();
+        setDeleteLoading(false);
+      })
+      .catch(function (response) {
+        message.error("Something Went Wrong!", "error");
+        setDeleteLoading(false);
+      });
+  };
+
+  const handleCancel = () => {
+    toggleDeleteModal(false);
+    setDeleteLoading(false);
+    setDeletionData(null);
+  };
 
   return (
     <m.div
@@ -161,6 +204,17 @@ const ClientContacts = () => {
           getData={refetch}
         />
       )}
+      <Modal
+        title="Delete Confirmation"
+        open={deleteModal}
+        onOk={deleteData}
+        onCancel={handleCancel}
+        okText={"Delete"}
+        okType={"danger"}
+        confirmLoading={deleteLoading}
+      >
+        <p>{`Are you sure you want to delete "${deletionData?.name}" from attachments?`}</p>
+      </Modal>
       <Modal
         title="Contact Information"
         open={showDetailsModal}

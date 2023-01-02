@@ -90,6 +90,16 @@ body {
   align-items: center;
 }
 
+.flex-at-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.medium-margin-top {
+  margin-top: 1.5rem;
+}
+
 .small-margin-top {
   margin-top: 1rem;
 }
@@ -136,4 +146,10 @@ body {
 
 .pointer {
   cursor: pointer;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 1rem;
 }

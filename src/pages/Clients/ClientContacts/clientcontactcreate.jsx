@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Button, Form, Drawer, Input, Switch, message } from "antd";
+import { Button, Form, Drawer, Input, message } from "antd";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import Password from "antd/lib/input/Password";
 
 const ClientContactForm = ({
   isModalOpen,
@@ -22,57 +21,77 @@ const ClientContactForm = ({
   };
 
   const handleUpdateUser = async (values, status = editData?.status) => {
-    var bodyFormDataUpdate = new FormData();
-    editData && bodyFormDataUpdate.append("id", editData.id);
-    bodyFormDataUpdate.append("name", values.name);
+    var data = JSON.stringify({
+      ...(editData && { id: Number(editData?.id) }),
+      name: values?.name,
+      email: values?.email,
+      department: values?.department,
+      number: values?.number,
+      fax: values?.fax,
+      skype: values?.skype,
+      twitter: values?.twitter,
+      jobtitle: values?.jobtitle,
+      description: values?.description,
+      street: values?.street,
+      city: values?.city,
+      state: values?.state,
+      code: values?.code,
+      country: values?.country,
+    });
     setLoading(true);
-    await axios({
-      method: editData ? "PUT" : "POST",
-      url: `/api/user`,
-      data: bodyFormDataUpdate,
+    var config = {
+      method: editData ? "put" : "post",
+      url: "/api/recruitment/client/contact",
       headers: {
         Authorization: token,
+        "Content-Type": "application/json",
       },
-    })
+      data: data,
+    };
+
+    axios(config)
       .then(function (response) {
-        if (response.status === 200) {
-          message.success(response.data.message);
-          setLoading(false);
-          onClose();
-          getData();
-        } else {
-          if (response.status === 201) {
-            message.error(response.data.error, "error");
-            setLoading(false);
-          } else {
-            message.error("Something Went Wrong!", "error");
-            setLoading(false);
-          }
-        }
+        message.success(response.data.message);
+        setLoading(false);
+        onClose();
+        getData();
       })
-      .catch(function (response) {
+      .catch(function (error) {
         message.error("Something Went Wrong!", "error");
+        setLoading(false);
       });
   };
 
   return (
     <Drawer
-      title={editData ? "Update the User Profile" : "Create a New User"}
+      title={editData ? "Update Contact" : "Create Contact"}
       placement="right"
+      size="large"
       onClose={onClose}
       open={isModalOpen}
     >
       {isModalOpen && (
         <Form
           layout="vertical"
-          className={"flex-small-gap1-column"}
+          className={"grid-2"}
           onFinish={handleUpdateUser}
           form={form}
           scrollToFirstError={true}
           initialValues={{
-            name: editData?.name,
-            email: editData?.email,
-            password: "",
+            name: editData?.name || "",
+            email: editData?.email || "",
+            department: editData?.department || "",
+            number: editData?.number || "",
+            fax: editData?.fax || "",
+            skype: editData?.skype || "",
+            twitter: editData?.twitter || "",
+            jobtitle: editData?.jobtitle || "",
+            description: editData?.description || "",
+            street: editData?.street || "",
+            city: editData?.city || "",
+            state: editData?.state || "",
+            code: editData?.code || "",
+            country: editData?.country || "",
           }}
         >
           <Form.Item
@@ -97,72 +116,75 @@ const ClientContactForm = ({
               },
             ]}
           >
-            <Input
-              placeholder={"Enter email of the user"}
-              disabled={editData}
-            />
+            <Input placeholder={"Enter email of the user"} />
           </Form.Item>
-          {!editData && (
-            <Form.Item
-              name="password"
-              className="zoom-in-animation"
-              label={"New Password"}
-              rules={[
-                {
-                  required: true,
-                  message: "No Password provided",
-                },
-              ]}
-            >
-              <Password placeholder={"Enter name of the user"} />
-            </Form.Item>
-          )}
-          <p className="bolder text-black">Permissions</p>
-          <div className="grid-2">
-            <Form.Item
-              name={"uploadcv_access"}
-              label={"Upload CV access"}
-              valuePropName={"checked"}
-            >
-              <Switch />
-            </Form.Item>
-            <Form.Item
-              name={"searchcv_access"}
-              label={"Search CV access"}
-              valuePropName={"checked"}
-            >
-              <Switch />
-            </Form.Item>
-            <Form.Item
-              name={"rejectedcv_access"}
-              label={"Rejected CV access"}
-              valuePropName={"checked"}
-            >
-              <Switch />
-            </Form.Item>
-            <Form.Item
-              name={"buildcv_access"}
-              label={"Build CV access"}
-              valuePropName={"checked"}
-            >
-              <Switch />
-            </Form.Item>
-            <Form.Item
-              name={"userreport_access"}
-              label={"User Report access"}
-              valuePropName={"checked"}
-            >
-              <Switch />
-            </Form.Item>
-            <Form.Item
-              name={"cvView"}
-              label={"CV View/Download"}
-              valuePropName={"checked"}
-            >
-              <Switch />
-            </Form.Item>
-          </div>
-          <div className="flex-at-end medium-margin-top">
+          <Form.Item
+            name="department"
+            label={"Department"}
+            rules={[
+              {
+                required: true,
+                message: "No Department provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter department of the user"} />
+          </Form.Item>
+          <Form.Item
+            name="number"
+            label={"Phone Number"}
+            rules={[
+              {
+                required: true,
+                message: "No Phone No provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter phone number of the user"} />
+          </Form.Item>
+          <Form.Item name="fax" label={"Fax No"}>
+            <Input placeholder={"Enter fax number of the user"} />
+          </Form.Item>
+          <Form.Item name="skype" label={"Skype Id"}>
+            <Input placeholder={"Enter skype id of the user"} />
+          </Form.Item>
+          <Form.Item name="twitter" label={"Twitter Profile Link"}>
+            <Input placeholder={"Enter profile link to twitter of the user"} />
+          </Form.Item>
+          <Form.Item
+            name="jobtitle"
+            label={"Job Title"}
+            rules={[
+              {
+                required: true,
+                message: "Job Title Not provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter job title of the user"} />
+          </Form.Item>
+          <Form.Item name="description" label={"Description"}>
+            <Input placeholder={"Enter description of the user"} />
+          </Form.Item>
+          <Form.Item name="street" label={"Street"}>
+            <Input placeholder={"Enter street within address"} />
+          </Form.Item>
+          <Form.Item name="city" label={"City"}>
+            <Input placeholder={"Enter city within address"} />
+          </Form.Item>
+          <Form.Item name="state" label={"State"}>
+            <Input placeholder={"Enter state within address"} />
+          </Form.Item>
+          <Form.Item name="code" label={"Pin Code"}>
+            <Input placeholder={"Enter pin code within address"} />
+          </Form.Item>
+          <Form.Item name="country" label={"Country"}>
+            <Input placeholder={"Enter country within address"} />
+          </Form.Item>
+          <div
+            className="flex-at-end medium-margin-top"
+            style={{ gridColumn: "1/3", gap: "1rem" }}
+          >
             <Button className="" type="text" onClick={onClose}>
               Cancel
             </Button>
@@ -172,7 +194,7 @@ const ClientContactForm = ({
               htmlType="submit"
               loading={isLoading}
             >
-              {editData ? "Update Account" : "Create Account"}
+              {editData ? "Update Contact" : "Create Contact"}
             </Button>
           </div>
         </Form>
