@@ -55,6 +55,7 @@ const ClientDashBoard = () => {
                 size="large"
                 block
                 onClick={() => navigateTo(card.path)}
+                disabled={card.disabled}
               >
                 {card.title}
               </Button>

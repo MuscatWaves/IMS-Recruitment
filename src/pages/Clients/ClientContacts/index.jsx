@@ -4,7 +4,7 @@ import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../ClientsDashBoard/constants";
-import { Button, message, Modal, Pagination, Table } from "antd";
+import { Button, Input, message, Modal, Pagination, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import userImage from "../../../images/user-no-image.png";
@@ -75,7 +75,7 @@ const ClientContacts = () => {
       if (Data.status === 200) {
         setLoading(false);
         setData(Data.data.data);
-        setTotal(Data.data.TotalDisplay[0].total);
+        setTotal(Data.data.TotalDisplay);
       } else {
         if (Data.status === 201) {
           message.error(Data.data.error);
@@ -213,7 +213,7 @@ const ClientContacts = () => {
         okType={"danger"}
         confirmLoading={deleteLoading}
       >
-        <p>{`Are you sure you want to delete "${deletionData?.name}" from attachments?`}</p>
+        <p>{`Are you sure you want to delete "${deletionData?.name}" from contact data?`}</p>
       </Modal>
       <Modal
         title="Contact Information"
@@ -295,16 +295,35 @@ const ClientContacts = () => {
         </m.div>
         <m.div className="client-filter-nav-header" variants={item}>
           <BreadCrumb items={navigation} />
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => {
-              setEditData(null);
-              toggleModal(true);
-            }}
-          >
-            + Create
-          </Button>
+          <div className="flex-small-gap">
+            <form
+              className="hidden"
+              onSubmit={(e) => {
+                e.preventDefault();
+                console.log(name);
+              }}
+            >
+              <Input
+                placeholder="Search here!"
+                size="large"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Button className="hidden" htmlType="submit">
+                Search
+              </Button>
+            </form>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => {
+                setEditData(null);
+                toggleModal(true);
+              }}
+            >
+              + Create
+            </Button>
+          </div>
         </m.div>
         <m.div variants={item}>
           <Table

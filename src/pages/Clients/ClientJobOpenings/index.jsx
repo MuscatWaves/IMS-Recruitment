@@ -4,23 +4,46 @@ import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../ClientsDashBoard/constants";
-import { Button, message, Pagination, Table } from "antd";
+import { Button, Input, message, Modal, Pagination, Table } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
+import userImage from "../../../images/user-no-image.png";
+import {
+  FaAddressBook,
+  FaFax,
+  FaPhoneAlt,
+  FaSkype,
+  FaTwitter,
+} from "react-icons/fa";
+import { AiFillMail } from "react-icons/ai";
+import ClientJobForm from "./clientjobcreate";
 import "./clientjobopenings.css";
 
 const ClientJobOpenings = () => {
   const cookies = new Cookies();
   const token = cookies.get("token");
   const [name, setName] = useState("");
-  const [data, setData] = useState(false);
+  const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDetailsData, setShowDetailsData] = useState({});
+  const [isModalOpen, toggleModal] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [deletionData, setDeletionData] = useState(null);
+  const [deleteModal, toggleDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     document.title = "Client - Job Openings";
-    // getData(name, page);
+    refetch();
+    // eslint-disable-next-line
   }, []);
+
+  const refetch = () => {
+    getData(name, page);
+  };
 
   const navigation = [
     { id: 0, name: "Dashboard", url: "/client/dashboard" },
@@ -33,25 +56,23 @@ const ClientJobOpenings = () => {
 
   const onChange = (page) => {
     setPage(page);
+    getData(name, page);
   };
 
   const getData = async (name, page) => {
     setLoading(true);
+    setData([]);
     let config = {
       headers: {
         Authorization: token,
       },
-      params: {
-        page: page,
-        search: name,
-      },
     };
     try {
-      const Data = await axios.get(`/api/cv`, config);
+      const Data = await axios.get(`/api/job?page=${page}`, config);
       if (Data.status === 200) {
         setLoading(false);
-        setData(Data.data);
-        setTotal(Data.data.TotalDisplay[0].total);
+        setData(Data.data.data);
+        setTotal(Data.data.TotalDisplay);
       } else {
         if (Data.status === 201) {
           message.error(Data.data.error);
@@ -62,52 +83,92 @@ const ClientJobOpenings = () => {
         }
       }
     } catch (err) {
-      message.error(err.response.data.error);
+      console.log(err);
       setLoading(false);
-      setData([]);
     }
   };
 
-  const test_data = [
+  const columns = [
     {
-      id: 1,
-      name: "John Doe",
-      email: "johndoe@gmail.com",
-      contact_no: "997722002",
-      industry: "IT Sector",
+      title: "Job Title",
+      render: (record) => <div className="text-grey">{record.designation}</div>,
     },
     {
-      id: 2,
-      name: "Maxwell Paris",
-      email: "maxwellParis@gmail.com",
-      contact_no: "988123321",
-      industry: "Oil & Gas Sector",
+      title: "Status",
+      render: (record) =>
+        record.isActive ? (
+          <div className="text-green">Active</div>
+        ) : (
+          <div className="text-red">Inactive</div>
+        ),
+    },
+    {
+      title: "Actions",
+      render: (record) => (
+        <div className="flex-small-gap">
+          <Button
+            type="primary"
+            onClick={() => {
+              setShowDetailsData(record);
+              setShowDetailsModal(true);
+            }}
+          >
+            View Profile
+          </Button>
+          <Button
+            type="primary"
+            shape="round"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditData(record);
+              toggleModal(true);
+            }}
+          />
+          <Button
+            type="primary"
+            shape="round"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => {
+              setDeletionData(record);
+              toggleDeleteModal(true);
+            }}
+          />
+        </div>
+      ),
+      width: "300px",
     },
   ];
 
-  const columns = [
-    {
-      title: "Client Name",
-      render: (record) => (
-        <div>
-          <div className="text-black bolder">{record.name}</div>
-          <div className="small-text text-grey">{record.email}</div>
-        </div>
-      ),
-    },
-    {
-      title: "Contact No",
-      render: (record) => (
-        <div className="text-grey bold">{record.contact_no}</div>
-      ),
-    },
-    {
-      title: "Industry",
-      render: (record) => (
-        <div className="text-grey bold">{record.industry}</div>
-      ),
-    },
-  ];
+  const deleteData = async () => {
+    setDeleteLoading(true);
+    await axios({
+      method: "delete",
+      url: `/api/recruitment/client/contact/${deletionData.id}`,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
+        Authorization: token,
+      },
+    })
+      .then(function (response) {
+        message.success("The data has been sucessfully deleted");
+        toggleDeleteModal(false);
+        setDeletionData("");
+        refetch();
+        setDeleteLoading(false);
+      })
+      .catch(function (response) {
+        message.error("Something Went Wrong!", "error");
+        setDeleteLoading(false);
+      });
+  };
+
+  const handleCancel = () => {
+    toggleDeleteModal(false);
+    setDeleteLoading(false);
+    setDeletionData(null);
+  };
 
   return (
     <m.div
@@ -116,9 +177,97 @@ const ClientJobOpenings = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
     >
+      {isModalOpen && (
+        <ClientJobForm
+          isModalOpen={isModalOpen}
+          setModal={toggleModal}
+          editData={editData}
+          setEditData={setEditData}
+          getData={refetch}
+        />
+      )}
+      <Modal
+        title="Delete Confirmation"
+        open={deleteModal}
+        onOk={deleteData}
+        onCancel={handleCancel}
+        okText={"Delete"}
+        okType={"danger"}
+        confirmLoading={deleteLoading}
+      >
+        <p>{`Are you sure you want to delete "${deletionData?.name}" from job data?`}</p>
+      </Modal>
+      <Modal
+        title="Contact Information"
+        open={showDetailsModal}
+        footer={false}
+        onCancel={() => {
+          setShowDetailsModal(false);
+          setShowDetailsData({});
+        }}
+        centered
+      >
+        <div className="client-contact-card">
+          <div className="client-contact-card--first">
+            <div>
+              <div className="large-text bold">{showDetailsData.name}</div>
+              <div className="medium-text text-grey">
+                {showDetailsData.jobtitle}
+              </div>
+              <div className="text-light-grey small-text">
+                {showDetailsData.description}
+              </div>
+            </div>
+            <div>
+              <div className="flex-small-gap primary-color">
+                <FaPhoneAlt className="text-grey" />
+                <div>{showDetailsData.number}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <AiFillMail className="text-grey" />
+                <div>{showDetailsData.email}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaFax className="text-grey" />
+                <div>{showDetailsData.fax}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaSkype className="text-grey" />
+                <div>{showDetailsData.skype}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaAddressBook className="text-grey" />
+                <div>
+                  {`${showDetailsData.street} ${showDetailsData.city} ${showDetailsData.state} ${showDetailsData.country}`}
+                  <span>
+                    {showDetailsData.code && `-${showDetailsData.code}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="client-contact-card--second">
+            <img src={userImage} width={150} height={150} alt={"user"} />
+            <div className="flex-small-gap">
+              <AiFillMail
+                className="pointer"
+                style={{ fontSize: "20px", color: "#c71610" }}
+              />
+              <></>
+              <FaTwitter
+                className="pointer"
+                style={{ fontSize: "20px", color: "#1DA1F2" }}
+                onClick={() =>
+                  showDetailsData.skype && window.open("https://www.google.com")
+                }
+              />
+            </div>
+          </div>
+        </div>
+      </Modal>
       <Header home={"/client/dashboard"} logOut={"/client"} />
       <m.div
-        className="client-job-openings"
+        className="client-contacts"
         variants={container}
         initial="hidden"
         animate="show"
@@ -128,13 +277,39 @@ const ClientJobOpenings = () => {
         </m.div>
         <m.div className="client-filter-nav-header" variants={item}>
           <BreadCrumb items={navigation} />
-          <Button type="primary" size="large">
-            + Create
-          </Button>
+          <div className="flex-small-gap">
+            <form
+              className="hidden"
+              onSubmit={(e) => {
+                e.preventDefault();
+                console.log(name);
+              }}
+            >
+              <Input
+                placeholder="Search here!"
+                size="large"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Button className="hidden" htmlType="submit">
+                Search
+              </Button>
+            </form>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => {
+                setEditData(null);
+                toggleModal(true);
+              }}
+            >
+              + Create
+            </Button>
+          </div>
         </m.div>
         <m.div variants={item}>
           <Table
-            dataSource={test_data}
+            dataSource={data}
             columns={columns}
             loading={isLoading}
             pagination={false}

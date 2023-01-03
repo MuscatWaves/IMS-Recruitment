@@ -19,20 +19,36 @@ body {
 
 /* Color */
 
-.white-color {
-  color: #fff;
-}
-
-.orange-color {
-  color: var(--orange-color);
-}
-
 .text-grey {
-  color: var(--grey-color);
+  color: #6b6b6b;
+}
+
+.text-light-grey {
+  color: #9e9fa7;
+}
+
+.text-orange {
+  color: #f07d00;
 }
 
 .text-black {
-  color: var(--black-color);
+  color: #272727;
+}
+
+.text-green {
+  color: #1fc264;
+}
+
+.text-red {
+  color: #ff4c41;
+}
+
+.text-blue {
+  color: #51a6f5;
+}
+
+.white-color {
+  color: #fff;
 }
 
 .text-light-grey {
@@ -113,6 +129,10 @@ body {
 }
 
 /* Misc */
+
+.hidden {
+  display: none;
+}
 
 .ant-input {
   color: grey;

@@ -20,6 +20,7 @@ export const cards = [
     icon: batchesImage,
     title: "CV Batches",
     path: "/uploadcv",
+    disabled: true,
   },
 ];
 

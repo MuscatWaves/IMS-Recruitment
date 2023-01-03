@@ -33,7 +33,7 @@ const BreadCrumb = ({ items }) => {
             <div
               className={
                 item.active
-                  ? "bolder orange-color"
+                  ? "bolder text-orange"
                   : "bolder primary-color pointer"
               }
               onClick={() => navigateTo(item.url)}
