@@ -7,17 +7,9 @@ import { container, item } from "../ClientsDashBoard/constants";
 import { Button, Input, message, Modal, Pagination, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import userImage from "../../../images/user-no-image.png";
-import {
-  FaAddressBook,
-  FaFax,
-  FaPhoneAlt,
-  FaSkype,
-  FaTwitter,
-} from "react-icons/fa";
-import { AiFillMail } from "react-icons/ai";
 import ClientJobForm from "./clientjobcreate";
 import "./clientjobopenings.css";
+import JdViewData from "./JdViewData";
 
 const ClientJobOpenings = () => {
   const cookies = new Cookies();
@@ -144,7 +136,7 @@ const ClientJobOpenings = () => {
     setDeleteLoading(true);
     await axios({
       method: "delete",
-      url: `/api/recruitment/client/contact/${deletionData.id}`,
+      url: `/api/job/${deletionData.id}`,
       headers: {
         Accept: "application/json",
         "Content-Type": "multipart/form-data",
@@ -186,6 +178,14 @@ const ClientJobOpenings = () => {
           getData={refetch}
         />
       )}
+      {showDetailsModal && (
+        <JdViewData
+          open={showDetailsModal}
+          setOpen={setShowDetailsModal}
+          data={showDetailsData}
+          setData={setShowDetailsData}
+        />
+      )}
       <Modal
         title="Delete Confirmation"
         open={deleteModal}
@@ -195,75 +195,7 @@ const ClientJobOpenings = () => {
         okType={"danger"}
         confirmLoading={deleteLoading}
       >
-        <p>{`Are you sure you want to delete "${deletionData?.name}" from job data?`}</p>
-      </Modal>
-      <Modal
-        title="Contact Information"
-        open={showDetailsModal}
-        footer={false}
-        onCancel={() => {
-          setShowDetailsModal(false);
-          setShowDetailsData({});
-        }}
-        centered
-      >
-        <div className="client-contact-card">
-          <div className="client-contact-card--first">
-            <div>
-              <div className="large-text bold">{showDetailsData.name}</div>
-              <div className="medium-text text-grey">
-                {showDetailsData.jobtitle}
-              </div>
-              <div className="text-light-grey small-text">
-                {showDetailsData.description}
-              </div>
-            </div>
-            <div>
-              <div className="flex-small-gap primary-color">
-                <FaPhoneAlt className="text-grey" />
-                <div>{showDetailsData.number}</div>
-              </div>
-              <div className="flex-small-gap primary-color">
-                <AiFillMail className="text-grey" />
-                <div>{showDetailsData.email}</div>
-              </div>
-              <div className="flex-small-gap primary-color">
-                <FaFax className="text-grey" />
-                <div>{showDetailsData.fax}</div>
-              </div>
-              <div className="flex-small-gap primary-color">
-                <FaSkype className="text-grey" />
-                <div>{showDetailsData.skype}</div>
-              </div>
-              <div className="flex-small-gap primary-color">
-                <FaAddressBook className="text-grey" />
-                <div>
-                  {`${showDetailsData.street} ${showDetailsData.city} ${showDetailsData.state} ${showDetailsData.country}`}
-                  <span>
-                    {showDetailsData.code && `-${showDetailsData.code}`}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="client-contact-card--second">
-            <img src={userImage} width={150} height={150} alt={"user"} />
-            <div className="flex-small-gap">
-              <AiFillMail
-                className="pointer"
-                style={{ fontSize: "20px", color: "#c71610" }}
-              />
-              <></>
-              <FaTwitter
-                className="pointer"
-                style={{ fontSize: "20px", color: "#1DA1F2" }}
-                onClick={() =>
-                  showDetailsData.skype && window.open("https://www.google.com")
-                }
-              />
-            </div>
-          </div>
-        </div>
+        <p>{`Are you sure you want to delete "${deletionData?.designation}" from job data?`}</p>
       </Modal>
       <Header home={"/client/dashboard"} logOut={"/client"} />
       <m.div

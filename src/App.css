@@ -112,6 +112,24 @@ body {
   align-items: center;
 }
 
+.flex-small-gap-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.flex-gap-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.flex-mid-gap-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .medium-margin-top {
   margin-top: 1.5rem;
 }
@@ -126,6 +144,10 @@ body {
 
 .bolder {
   font-weight: 700;
+}
+
+.text-padding-left {
+  padding-left: 1rem;
 }
 
 /* Misc */
@@ -172,4 +194,8 @@ body {
   display: grid;
   grid-template-columns: repeat(2, auto);
   gap: 1rem;
+}
+
+.grid-2-column {
+  grid-column: 1/3;
 }

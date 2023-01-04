@@ -1,7 +1,17 @@
 import React, { useState } from "react";
-import { Button, Form, Drawer, Input, message, Select } from "antd";
+import {
+  Button,
+  Form,
+  Drawer,
+  Input,
+  message,
+  Select,
+  Switch,
+  InputNumber,
+} from "antd";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { useQuery } from "react-query";
 
 const ClientJobForm = ({
   isModalOpen,
@@ -14,34 +24,92 @@ const ClientJobForm = ({
   const [isLoading, setLoading] = useState(false);
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const { TextArea } = Input;
 
   const onClose = () => {
     setModal(false);
     setEditData(null);
   };
 
-  const handleUpdateUser = async (values, status = editData?.status) => {
+  const { data: contactResult } = useQuery(
+    ["contactResult"],
+    () =>
+      axios.get("/api/recruitment/client/contact?page=0", {
+        headers: {
+          Authorization: token,
+        },
+      }),
+    {
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: item.name,
+          value: item.id,
+        }));
+        return newData;
+      },
+    }
+  );
+
+  const handleUpdateUser = async (values) => {
     var data = JSON.stringify({
-      ...(editData && { id: Number(editData?.id) }),
-      name: values?.name,
-      email: values?.email,
-      department: values?.department,
-      number: values?.number,
-      fax: values?.fax,
-      skype: values?.skype,
-      twitter: values?.twitter,
-      jobtitle: values?.jobtitle,
-      description: values?.description,
-      street: values?.street,
-      city: values?.city,
-      state: values?.state,
-      code: values?.code,
-      country: values?.country,
+      ...(editData && { id: editData?.id }),
+      contact: values?.contact,
+      isActive: values?.isActive,
+      designation: values?.designation,
+      vacancies: values?.vacancies,
+      JobRole: values?.JobRole,
+      JobResponsibilities:
+        (values.JobResponsibilities &&
+          // eslint-disable-next-line
+          values.JobResponsibilities.replace(/[^\x00-\x7F]/g, "-")) ||
+        "",
+      education:
+        (values.education &&
+          // eslint-disable-next-line
+          values.education.replace(/[^\x00-\x7F]/g, "-")) ||
+        "",
+      experience:
+        (values.experience &&
+          // eslint-disable-next-line
+          values.experience.replace(/[^\x00-\x7F]/g, "-")) ||
+        "",
+      skills:
+        (values.skills &&
+          // eslint-disable-next-line
+          values.skills.replace(/[^\x00-\x7F]/g, "-")) ||
+        "",
+      gender: values?.gender,
+      nationality: values?.nationality,
+      age: values?.age,
+      workLocation: values?.workLocation,
+      workinghours:
+        (values.workinghours &&
+          // eslint-disable-next-line
+          values.workinghours.replace(/[^\x00-\x7F]/g, "-")) ||
+        "",
+      salary:
+        (values.salary &&
+          // eslint-disable-next-line
+          values.salary.replace(/[^\x00-\x7F]/g, "-")) ||
+        "",
+      annualLeave: values?.annualLeave,
+      accomodation: values?.accomodation,
+      healthInsurance: values?.healthInsurance,
+      drivingLicense: values?.drivingLicense,
+      languages: values?.languages,
+      joiningTicket: values?.joiningTicket,
+      annualTicket: values?.annualTicket,
+      familyStatus: values?.familyStatus,
+      otherBenefits:
+        (values.otherBenefits &&
+          // eslint-disable-next-line
+          values.otherBenefits.replace(/[^\x00-\x7F]/g, "-")) ||
+        "",
     });
     setLoading(true);
     var config = {
       method: editData ? "put" : "post",
-      url: "/api/recruitment/client/contact",
+      url: "/api/job",
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -78,21 +146,21 @@ const ClientJobForm = ({
           form={form}
           scrollToFirstError={true}
           initialValues={{
-            contact: editData?.contact || "",
+            contact: editData?.contact || null,
             isActive: editData?.isActive || false,
             designation: editData?.designation,
             vacancies: editData?.vacancies || 1,
             JobRole: editData?.JobRole || "",
             JobResponsibilities: editData?.JobResponsibilities || "",
             education: editData?.education || "",
-            experience: editData?.experience || 0,
+            experience: editData?.experience || "",
             skills: editData?.skills || "",
             gender: editData?.gender || "",
             nationality: editData?.nationality || "",
-            age: editData?.age || 1,
+            age: editData?.age || "",
             workLocation: editData?.workLocation || "",
-            workinghours: editData?.workinghours || 1,
-            salary: editData?.salary || 1,
+            workinghours: editData?.workinghours || "",
+            salary: editData?.salary || "",
             annualLeave: editData?.annualLeave || false,
             accomodation: editData?.accomodation || "",
             healthInsurance: editData?.healthInsurance || "",
@@ -105,91 +173,333 @@ const ClientJobForm = ({
           }}
         >
           <Form.Item
-            name="name"
-            label={"Name"}
+            name="contact"
+            label={"Contact"}
             rules={[
               {
                 required: true,
-                message: "No Username provided",
+                message: "No Contact provided",
               },
             ]}
           >
-            <Select placeholder={"Enter name of the user"} />
+            <Select
+              placeholder="Please select a contact"
+              options={contactResult}
+              allowClear
+            />
           </Form.Item>
           <Form.Item
-            name="email"
-            label={"Email"}
-            rules={[
-              {
-                required: true,
-                message: "No Email provided",
-              },
-            ]}
+            name={"isActive"}
+            label={"Job Status"}
+            valuePropName={"checked"}
           >
-            <Input placeholder={"Enter email of the user"} />
+            <Switch />
           </Form.Item>
           <Form.Item
-            name="department"
-            label={"Department"}
+            name="designation"
+            label={"Designation"}
             rules={[
               {
                 required: true,
-                message: "No Department provided",
+                message: "No Designation provided",
               },
             ]}
           >
-            <Input placeholder={"Enter department of the user"} />
+            <Input placeholder={"Enter designation for the job"} />
           </Form.Item>
           <Form.Item
-            name="number"
-            label={"Phone Number"}
+            name="vacancies"
+            label={"Vacancies"}
             rules={[
               {
                 required: true,
-                message: "No Phone No provided",
+                message: "No of vacancies",
               },
             ]}
           >
-            <Input placeholder={"Enter phone number of the user"} />
-          </Form.Item>
-          <Form.Item name="fax" label={"Fax No"}>
-            <Input placeholder={"Enter fax number of the user"} />
-          </Form.Item>
-          <Form.Item name="skype" label={"Skype Id"}>
-            <Input placeholder={"Enter skype id of the user"} />
-          </Form.Item>
-          <Form.Item name="twitter" label={"Twitter Profile Link"}>
-            <Input placeholder={"Enter profile link to twitter of the user"} />
+            <InputNumber
+              placeholder={"Enter no of vacancies for the job"}
+              style={{ width: "100%" }}
+            />
           </Form.Item>
           <Form.Item
-            name="jobtitle"
-            label={"Job Title"}
+            className="grid-2-column"
+            name="JobRole"
+            label={"JobRole"}
             rules={[
               {
                 required: true,
-                message: "Job Title Not provided",
+                message: "No JobRole provided",
               },
             ]}
           >
-            <Input placeholder={"Enter job title of the user"} />
+            {/* <TextArea
+              placeholder="Enter the job role for the job"
+              autoSize={{ minRows: 3 }}
+            /> */}
+            <Input placeholder="Enter the job role for the job" />
           </Form.Item>
-          <Form.Item name="description" label={"Description"}>
-            <Input placeholder={"Enter description of the user"} />
+          <Form.Item
+            className="grid-2-column"
+            name="JobResponsibilities"
+            label={"JobResponsibilities"}
+            rules={[
+              {
+                required: true,
+                message: "No JobResponsibilities provided",
+              },
+            ]}
+          >
+            <TextArea
+              placeholder="Enter the job responsibilities for the job"
+              autoSize={{ minRows: 3 }}
+            />
           </Form.Item>
-          <Form.Item name="street" label={"Street"}>
-            <Input placeholder={"Enter street within address"} />
+          <Form.Item
+            className="grid-2-column"
+            name="education"
+            label={"Education"}
+            rules={[
+              {
+                required: true,
+                message: "No education provided",
+              },
+            ]}
+          >
+            <TextArea
+              placeholder="Enter the education needed for the job"
+              autoSize={{ minRows: 3 }}
+            />
           </Form.Item>
-          <Form.Item name="city" label={"City"}>
-            <Input placeholder={"Enter city within address"} />
+          <Form.Item
+            className="grid-2-column"
+            name="experience"
+            label={"Experience"}
+            rules={[
+              {
+                required: true,
+                message: "No Experience provided",
+              },
+            ]}
+          >
+            <TextArea
+              placeholder="Enter the experience required for the job"
+              autoSize={{ minRows: 3 }}
+            />
           </Form.Item>
-          <Form.Item name="state" label={"State"}>
-            <Input placeholder={"Enter state within address"} />
+          <Form.Item
+            className="grid-2-column"
+            name="skills"
+            label={"Skills"}
+            rules={[
+              {
+                required: true,
+                message: "No Skills provided",
+              },
+            ]}
+          >
+            <TextArea
+              placeholder="Enter the skills required for the job"
+              autoSize={{ minRows: 3 }}
+            />
           </Form.Item>
-          <Form.Item name="code" label={"Pin Code"}>
-            <Input placeholder={"Enter pin code within address"} />
+          <Form.Item
+            name="gender"
+            label={"Gender"}
+            rules={[
+              {
+                required: true,
+                message: "No Gender provided",
+              },
+            ]}
+          >
+            <Select
+              placeholder="Please select a contact"
+              options={[
+                { label: "Any", value: "Any" },
+                { label: "Male", value: "Male" },
+                { label: "Female", value: "Female" },
+              ]}
+              allowClear
+            />
           </Form.Item>
-          <Form.Item name="country" label={"Country"}>
-            <Input placeholder={"Enter country within address"} />
+          <Form.Item
+            name="nationality"
+            label={"Nationality"}
+            rules={[
+              {
+                required: true,
+                message: "No Nationality provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter nationality needed for this job"} />
+          </Form.Item>
+          <Form.Item
+            name="age"
+            label={"Age"}
+            rules={[
+              {
+                required: true,
+                message: "No Age provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter age group required for the job"} />
+          </Form.Item>
+          <Form.Item
+            name="workLocation"
+            label={"Work Location"}
+            rules={[
+              {
+                required: true,
+                message: "No Work Location provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter Work Location for this job"} />
+          </Form.Item>
+          <Form.Item
+            name="workinghours"
+            label={"Working Hours"}
+            rules={[
+              {
+                required: true,
+                message: "No working hours provided",
+              },
+            ]}
+          >
+            <TextArea
+              placeholder="Enter the working hours provided for the job"
+              autoSize={{ minRows: 3 }}
+            />
+          </Form.Item>
+          <Form.Item
+            name="salary"
+            label={"Salary"}
+            rules={[
+              {
+                required: true,
+                message: "No Salary Details provided",
+              },
+            ]}
+          >
+            <TextArea
+              placeholder="Enter the salary details provided for this job"
+              autoSize={{ minRows: 3 }}
+            />
+          </Form.Item>
+          <Form.Item
+            name={"annualLeave"}
+            label={"Annual Leave"}
+            rules={[
+              {
+                required: true,
+                message: "No Annual leave provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter annual leave provided by the company"} />
+          </Form.Item>
+          <Form.Item
+            name="accomodation"
+            label={"Accomodation"}
+            rules={[
+              {
+                required: true,
+                message: "No Work Location provided",
+              },
+            ]}
+          >
+            <Input
+              placeholder={"Enter if Accomodation is provided by the company"}
+            />
+          </Form.Item>
+          <Form.Item
+            name="healthInsurance"
+            label={"Health Insurance"}
+            rules={[
+              {
+                required: true,
+                message: "No Health Insurance provided",
+              },
+            ]}
+          >
+            <Input
+              placeholder={
+                "Enter if health Insurance is provided by the company"
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="drivingLicense"
+            label={"Driving License"}
+            rules={[
+              {
+                required: true,
+                message: "No answer provided",
+              },
+            ]}
+          >
+            <Input
+              placeholder={"Enter if Driving License is required for the job"}
+            />
+          </Form.Item>
+          <Form.Item
+            name="languages"
+            label={"Languages"}
+            rules={[
+              {
+                required: true,
+                message: "No Language provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter languages required for the job"} />
+          </Form.Item>
+          <Form.Item
+            name={"joiningTicket"}
+            label={"Joining Ticket provided"}
+            valuePropName={"checked"}
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
+            name="familyStatus"
+            label={"Family Status"}
+            rules={[
+              {
+                required: true,
+                message: "No answer provided",
+              },
+            ]}
+          >
+            <Input
+              placeholder={"Enter family status requirement for the job"}
+            />
+          </Form.Item>
+          <Form.Item
+            name={"annualTicket"}
+            label={"Annual Ticket provided"}
+            valuePropName={"checked"}
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
+            className="grid-2-column"
+            name="otherBenefits"
+            label={"Other Benefits"}
+            rules={[
+              {
+                required: true,
+                message: "No Other Benefits provided",
+              },
+            ]}
+          >
+            <TextArea
+              placeholder="Enter the other benefits provided for the job"
+              autoSize={{ minRows: 3 }}
+            />
           </Form.Item>
           <div
             className="flex-at-end medium-margin-top"
