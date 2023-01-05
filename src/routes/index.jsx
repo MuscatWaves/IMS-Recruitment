@@ -13,6 +13,20 @@ const ClientJobOpenings = lazy(() =>
 );
 const ClientContacts = lazy(() => import("../pages/Clients/ClientContacts"));
 
+// Recruitment
+const RecruitmentLogin = lazy(() =>
+  import("../pages/Recruitment/RecruitmentLogin")
+);
+const RecruitmentDashboard = lazy(() =>
+  import("../pages/Recruitment/RecruitmentDashBoard")
+);
+const RecruitmentJobOpenings = lazy(() =>
+  import("../pages/Recruitment/RecruitmentJobOpenings")
+);
+const RecruitmentContacts = lazy(() =>
+  import("../pages/Recruitment/RecruitmentContacts")
+);
+
 // Misc
 const PageNotFound = lazy(() => import("../components/NoPageFound"));
 const NotAuthorize = lazy(() => import("../components/NotAuthorize"));
@@ -43,6 +57,23 @@ const Routing = () => {
                 <Route
                   path="/client/contacts"
                   element={<ClientContacts />}
+                ></Route>
+                {/* Recruitment */}
+                <Route
+                  path="/recruitment"
+                  element={<RecruitmentLogin />}
+                ></Route>
+                <Route
+                  path="/recruitment/dashboard"
+                  element={<RecruitmentDashboard />}
+                ></Route>
+                <Route
+                  path="/recruitment/jobs"
+                  element={<RecruitmentJobOpenings />}
+                ></Route>
+                <Route
+                  path="/recruitment/contacts"
+                  element={<RecruitmentContacts />}
                 ></Route>
                 {/* Misc */}
                 <Route path="/notAuthorized" element={<NotAuthorize />}></Route>

@@ -13,7 +13,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { useQuery } from "react-query";
 
-const ClientJobForm = ({
+const RecruitmentJobForm = ({
   isModalOpen,
   setModal,
   editData,
@@ -109,7 +109,7 @@ const ClientJobForm = ({
     setLoading(true);
     var config = {
       method: editData ? "put" : "post",
-      url: "/api/job",
+      url: "/api/recruitment/job",
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -513,7 +513,7 @@ const ClientJobForm = ({
               htmlType="submit"
               loading={isLoading}
             >
-              {editData ? "Update Contact" : "Create Contact"}
+              {editData ? "Update Job" : "Create Job"}
             </Button>
           </div>
         </Form>
@@ -522,4 +522,4 @@ const ClientJobForm = ({
   );
 };
 
-export default ClientJobForm;
+export default RecruitmentJobForm;

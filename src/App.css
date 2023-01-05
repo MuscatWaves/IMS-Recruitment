@@ -130,8 +130,24 @@ body {
   gap: 1rem;
 }
 
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-space-evenly {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
 .medium-margin-top {
   margin-top: 1.5rem;
+}
+
+.small-margin {
+  margin: 1rem;
 }
 
 .small-margin-top {

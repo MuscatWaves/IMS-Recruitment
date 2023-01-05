@@ -1,0 +1,36 @@
+.recruitment-dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.cards-main {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 2rem;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.cards-main__each {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  width: 350px;
+  color: var(--primary-color);
+  background-color: var(--background-card-color);
+}
+
+.cards-main__each-image {
+  width: 120px;
+  height: 100px;
+  padding: 1rem;
+}
