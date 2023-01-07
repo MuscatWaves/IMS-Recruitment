@@ -19,8 +19,7 @@ export const cards = [
     id: 3,
     icon: batchesImage,
     title: "Clients",
-    path: "/recruitment",
-    disabled: true,
+    path: "/recruitment/clients",
   },
 ];
 
