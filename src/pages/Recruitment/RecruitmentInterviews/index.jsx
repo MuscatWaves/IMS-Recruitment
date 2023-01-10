@@ -6,21 +6,21 @@ import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../RecruitmentDashBoard/constants";
 import { Button, Input, message, Modal, Pagination, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import RecruitmentInterviewsForm from "./recruitmentinterviewscreate";
 import axios from "axios";
-import RecruitmentJobForm from "./recruitmentjobcreate";
-import JdViewData from "./JdViewData";
-import "./recruitmentjobopenings.css";
+import dayjs from "dayjs";
+import "./recruitmentinterviews.css";
 
-const RecruitmentJobOpenings = () => {
+const RecruitmentInterviews = () => {
   const cookies = new Cookies();
   const token = cookies.get("token");
+  var localizedFormat = require("dayjs/plugin/localizedFormat");
+  dayjs.extend(localizedFormat);
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [showDetailsData, setShowDetailsData] = useState({});
   const [isModalOpen, toggleModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [deletionData, setDeletionData] = useState(null);
@@ -28,7 +28,7 @@ const RecruitmentJobOpenings = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    document.title = "Recruitment - Job Openings";
+    document.title = "Recruitment - Interviews";
     refetch();
     // eslint-disable-next-line
   }, []);
@@ -41,7 +41,7 @@ const RecruitmentJobOpenings = () => {
     { id: 0, name: "Dashboard", url: "/recruitment/dashboard" },
     {
       id: 1,
-      name: "Job Openings",
+      name: "Interviews",
       active: true,
     },
   ];
@@ -60,7 +60,7 @@ const RecruitmentJobOpenings = () => {
       },
     };
     try {
-      const Data = await axios.get(`/api/recruitment/job?page=${page}`, config);
+      const Data = await axios.get(`/api/interview?page=${page}`, config);
       if (Data.status === 200) {
         setLoading(false);
         setData(Data.data.data);
@@ -80,10 +80,40 @@ const RecruitmentJobOpenings = () => {
     }
   };
 
+  //   <div className="very-small-text text-grey bold">
+  //   {dayjs(record.createdAt).format("llll")}
+  // </div>
+
   const columns = [
     {
-      title: "Job Title",
-      render: (record) => <div className="text-grey">{record.designation}</div>,
+      title: "Name",
+      render: (record) => (
+        <div className="text-black bold">{record.interview}</div>
+      ),
+    },
+    {
+      title: "From",
+      render: (record) => (
+        <div className="text-grey">
+          {dayjs(record.createdAt).format("llll")}
+        </div>
+      ),
+    },
+    {
+      title: "To",
+      render: (record) => (
+        <div className="text-grey">
+          {dayjs(record.createdAt).format("llll")}
+        </div>
+      ),
+    },
+    {
+      title: "Candidate Name",
+      render: (record) => <div className="text-grey">{record.candidate}</div>,
+    },
+    {
+      title: "Client name",
+      render: (record) => <div className="text-grey">{record.client}</div>,
     },
     {
       title: "Status",
@@ -98,15 +128,6 @@ const RecruitmentJobOpenings = () => {
       title: "Actions",
       render: (record) => (
         <div className="flex-small-gap">
-          <Button
-            type="primary"
-            onClick={() => {
-              setShowDetailsData(record);
-              setShowDetailsModal(true);
-            }}
-          >
-            View Job Description
-          </Button>
           <Button
             type="primary"
             shape="round"
@@ -136,7 +157,7 @@ const RecruitmentJobOpenings = () => {
     setDeleteLoading(true);
     await axios({
       method: "delete",
-      url: `/api/recruitment/job/${deletionData.id}`,
+      url: `/api/client/${deletionData.id}`,
       headers: {
         Accept: "application/json",
         "Content-Type": "multipart/form-data",
@@ -170,20 +191,12 @@ const RecruitmentJobOpenings = () => {
       transition={{ duration: 0.6 }}
     >
       {isModalOpen && (
-        <RecruitmentJobForm
+        <RecruitmentInterviewsForm
           isModalOpen={isModalOpen}
           setModal={toggleModal}
           editData={editData}
           setEditData={setEditData}
           getData={refetch}
-        />
-      )}
-      {showDetailsModal && (
-        <JdViewData
-          open={showDetailsModal}
-          setOpen={setShowDetailsModal}
-          data={showDetailsData}
-          setData={setShowDetailsData}
         />
       )}
       <Modal
@@ -195,7 +208,7 @@ const RecruitmentJobOpenings = () => {
         okType={"danger"}
         confirmLoading={deleteLoading}
       >
-        <p>{`Are you sure you want to delete "${deletionData?.designation}" from job data?`}</p>
+        <p>{`Are you sure you want to delete "${deletionData?.name}" from interview data?`}</p>
       </Modal>
       <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
       <m.div
@@ -205,7 +218,7 @@ const RecruitmentJobOpenings = () => {
         animate="show"
       >
         <m.div className="title-text primary-color" variants={item}>
-          Job Openings
+          Interviews
         </m.div>
         <m.div className="recruitment-filter-nav-header" variants={item}>
           <BreadCrumb items={navigation} />
@@ -264,4 +277,4 @@ const RecruitmentJobOpenings = () => {
   );
 };
 
-export default RecruitmentJobOpenings;
+export default RecruitmentInterviews;

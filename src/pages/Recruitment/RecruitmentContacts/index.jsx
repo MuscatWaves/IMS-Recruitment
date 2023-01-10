@@ -93,7 +93,7 @@ const RecruitmentContacts = () => {
 
   const columns = [
     {
-      title: "Client Name",
+      title: "Name",
       render: (record) => (
         <div>
           <div className="text-black bold">{record.name}</div>

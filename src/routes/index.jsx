@@ -29,6 +29,9 @@ const RecruitmentContacts = lazy(() =>
 const RecruitmentClients = lazy(() =>
   import("../pages/Recruitment/RecruitmentClients")
 );
+const RecruitmentInterviews = lazy(() =>
+  import("../pages/Recruitment/RecruitmentInterviews")
+);
 
 // Misc
 const PageNotFound = lazy(() => import("../components/NoPageFound"));
@@ -81,6 +84,10 @@ const Routing = () => {
                 <Route
                   path="/recruitment/clients"
                   element={<RecruitmentClients />}
+                ></Route>
+                <Route
+                  path="/recruitment/interviews"
+                  element={<RecruitmentInterviews />}
                 ></Route>
                 {/* Misc */}
                 <Route path="/notAuthorized" element={<NotAuthorize />}></Route>

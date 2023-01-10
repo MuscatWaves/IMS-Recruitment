@@ -1,6 +1,7 @@
 import jobOpeningsImage from "../../../images/job_openings.png";
 import contactsImage from "../../../images/contacts.svg";
 import batchesImage from "../../../images/batch.svg";
+import interviewImage from "../../../images/interview.svg";
 
 export const cards = [
   {
@@ -20,6 +21,13 @@ export const cards = [
     icon: batchesImage,
     title: "Clients",
     path: "/recruitment/clients",
+  },
+  {
+    id: 4,
+    icon: interviewImage,
+    title: "Interview - Work in Progress",
+    path: "/recruitment/interviews",
+    disabled: true,
   },
 ];
 

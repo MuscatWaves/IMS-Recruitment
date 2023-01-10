@@ -132,7 +132,7 @@ const RecruitmentJobForm = ({
 
   return (
     <Drawer
-      title={editData ? "Update Contact" : "Create Contact"}
+      title={editData ? "Update Job" : "Create Job"}
       placement="right"
       size="large"
       onClose={onClose}

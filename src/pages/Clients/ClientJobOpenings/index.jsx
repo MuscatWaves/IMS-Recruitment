@@ -105,7 +105,7 @@ const ClientJobOpenings = () => {
               setShowDetailsModal(true);
             }}
           >
-            View Profile
+            View Job Description
           </Button>
           <Button
             type="primary"

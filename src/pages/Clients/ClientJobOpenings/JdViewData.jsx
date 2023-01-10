@@ -17,8 +17,9 @@ const JdViewData = ({ data, setData, open, setOpen }) => {
       centered
       width={1000}
     >
+      <Divider />
       <div className="flex-gap-column">
-        <div className="flex-between small-margin">
+        <div className="small-margin flex-space-evenly">
           <div>
             <div className="bolder text-black">Designation</div>
             <div className="bold text-grey medium-text">{data.designation}</div>
@@ -26,6 +27,16 @@ const JdViewData = ({ data, setData, open, setOpen }) => {
           <div>
             <div className="bolder text-black">No of Vacancies</div>
             <div className="bold text-grey medium-text">{data.vacancies}</div>
+          </div>
+          <div>
+            <div className="bolder text-black">Job Status</div>
+            <div className="bold text-grey medium-text">
+              {data.isActive ? (
+                <div className="text-green bold">Active</div>
+              ) : (
+                <div className="text-red bold">Inactive</div>
+              )}
+            </div>
           </div>
         </div>
         {/* Job Role */}
