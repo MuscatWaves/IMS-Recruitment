@@ -17,6 +17,7 @@ import {
 } from "react-icons/fa";
 import { AiFillMail } from "react-icons/ai";
 import RecruitmentContactForm from "./recruitmentcontactcreate";
+import { useQuery } from "react-query";
 import "./recruitmentcontacts.css";
 
 const RecruitmentContacts = () => {
@@ -58,6 +59,26 @@ const RecruitmentContacts = () => {
     setPage(page);
     getData(name, page);
   };
+
+  const { data: clientsList } = useQuery(
+    ["clients"],
+    () =>
+      axios.get("/api/client", {
+        headers: {
+          Authorization: token,
+        },
+      }),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: item.name,
+          value: item.id,
+        }));
+        return newData;
+      },
+    }
+  );
 
   const getData = async (name, page) => {
     setLoading(true);
@@ -118,7 +139,14 @@ const RecruitmentContacts = () => {
     },
     {
       title: "Client",
-      render: (record) => <div className="text-grey">{record.client}</div>,
+      render: (record) => (
+        <div className="text-grey">
+          {
+            clientsList?.filter((item) => item.value === record.client)[0]
+              ?.label
+          }
+        </div>
+      ),
     },
     {
       title: "Actions",

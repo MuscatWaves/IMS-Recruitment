@@ -25,9 +25,8 @@ export const cards = [
   {
     id: 4,
     icon: interviewImage,
-    title: "Interview - Work in Progress",
+    title: "Interview",
     path: "/recruitment/interviews",
-    disabled: true,
   },
 ];
 

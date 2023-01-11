@@ -177,6 +177,16 @@ body {
   font-weight: 600;
 }
 
+.ant-picker {
+  display: flex;
+}
+
+.ant-picker-input > input {
+  color: grey !important;
+  font-weight: 600;
+  font-family: "Roboto", sans-serif;
+}
+
 .ant-select {
   color: grey;
   font-weight: 600;

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Button, Form, Drawer, Input, message, Switch } from "antd";
+import { Button, Form, Drawer, Input, message, Select, DatePicker } from "antd";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import Password from "antd/es/input/Password";
+import dayjs from "dayjs";
+import jwtDecode from "jwt-decode";
+import TextArea from "antd/es/input/TextArea";
 
 const RecruitmentInterviewsForm = ({
   isModalOpen,
@@ -10,12 +12,34 @@ const RecruitmentInterviewsForm = ({
   editData,
   setEditData,
   getData,
+  clientsList,
+  clientFetching,
+  jobsList,
+  jobFetching,
 }) => {
   const [form] = Form.useForm();
   const [isLoading, setLoading] = useState(false);
-  const [newPassword, setNewPassword] = useState(false);
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const user = token && jwtDecode(token);
+
+  const status = [
+    {
+      id: 1,
+      label: "Arranged",
+      value: 0,
+    },
+    {
+      id: 2,
+      label: "In Progress",
+      value: 1,
+    },
+    {
+      id: 3,
+      label: "Completed",
+      value: 2,
+    },
+  ];
 
   const onClose = () => {
     setModal(false);
@@ -25,16 +49,22 @@ const RecruitmentInterviewsForm = ({
   const handleUpdateUser = async (values, status = editData?.status) => {
     var data = JSON.stringify({
       ...(editData && { id: Number(editData?.id) }),
-      ...(newPassword && { password: values?.newPassword }),
-      ...(!editData && { password: values?.password }),
-      name: values?.name,
-      email: values?.email,
-      isActive: values?.isActive,
+      interview: values?.interview,
+      candidate: values?.candidate,
+      client: values?.client,
+      job: values?.job,
+      start_date: dayjs(editData?.start_date).format("YYYY-MM-DD h:mm:ss"),
+      end_date: dayjs(editData?.end_date).format("YYYY-MM-DD h:mm:ss"),
+      location: values?.location,
+      comment: values?.comment,
+      status: values?.status,
+      createdBy: user.recruitmentId,
+      createdAt: dayjs(),
     });
     setLoading(true);
     var config = {
       method: editData ? "put" : "post",
-      url: "/api/client",
+      url: "/api/interview",
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -57,99 +87,165 @@ const RecruitmentInterviewsForm = ({
 
   return (
     <Drawer
-      title={editData ? "Update Client" : "Create Client"}
+      title={editData ? "Update Interview" : "Create Interview"}
       placement="right"
+      size="large"
       onClose={onClose}
       open={isModalOpen}
     >
       {isModalOpen && (
         <Form
           layout="vertical"
+          className="grid-2"
           onFinish={handleUpdateUser}
           form={form}
           scrollToFirstError={true}
           initialValues={{
-            name: editData?.name || "",
-            email: editData?.email || "",
-            password: editData?.password,
-            newPassword: "",
-            isActive: editData?.isActive || false,
+            interview: editData?.interview,
+            candidate: editData?.candidate,
+            client: editData?.client,
+            job: editData?.job,
+            start_date:
+              (editData?.start_date &&
+                dayjs(editData?.start_date).isValid() &&
+                dayjs(editData?.start_date)) ||
+              "",
+            end_date:
+              (editData?.end_date &&
+                dayjs(editData?.end_date).isValid() &&
+                dayjs(editData?.end_date)) ||
+              "",
+            location: editData?.location,
+            comment: editData?.comment,
+            status: editData?.status,
           }}
         >
           <Form.Item
-            name="name"
-            label={"Name"}
+            name="interview"
+            label={"Interview"}
             rules={[
               {
                 required: true,
-                message: "No Username provided",
+                message: "No interview name provided",
               },
             ]}
           >
-            <Input placeholder={"Enter name of the user"} />
+            <Input placeholder={"Enter interview name"} />
           </Form.Item>
           <Form.Item
-            name="email"
-            label={"Email"}
+            name="candidate"
+            label={"Candidate"}
             rules={[
               {
                 required: true,
-                message: "No Email provided",
+                message: "No candidate provided",
               },
             ]}
           >
-            <Input placeholder={"Enter email of the user"} />
+            <Select
+              placeholder={"Select the candidate"}
+              options={[
+                {
+                  label: "John Doe",
+                  value: 13,
+                },
+              ]}
+            />
           </Form.Item>
-          {editData && (
-            <div
-              className="flex-small-gap small-margin"
-              style={{ marginLeft: 0 }}
-            >
-              <Switch
-                checked={newPassword}
-                onChange={(checked) => {
-                  setNewPassword(checked);
-                  form.setFieldsValue("password", "");
-                }}
-                title={"Click to update pasword"}
-              />
-              <div className="bold text-grey">Click to update pasword</div>
-            </div>
-          )}
-          {newPassword && (
-            <Form.Item
-              name="newPassword"
-              label={"New Password"}
-              rules={[
-                {
-                  required: true,
-                  message: "No New Password provided",
-                },
-              ]}
-            >
-              <Password placeholder={"Enter new password of the user"} />
-            </Form.Item>
-          )}
-          {!editData && (
-            <Form.Item
-              name="password"
-              label={"Password"}
-              rules={[
-                {
-                  required: true,
-                  message: "No Password provided",
-                },
-              ]}
-            >
-              <Password placeholder={"Enter password for the user"} />
-            </Form.Item>
-          )}
           <Form.Item
-            name={"isActive"}
-            label={"Account Status"}
-            valuePropName={"checked"}
+            name="client"
+            label={"Client"}
+            rules={[
+              {
+                required: true,
+                message: "No client provided",
+              },
+            ]}
           >
-            <Switch />
+            <Select
+              placeholder={"Select the client"}
+              options={clientsList}
+              loading={clientFetching}
+              disabled={clientFetching}
+            />
+          </Form.Item>
+          <Form.Item
+            name="job"
+            label={"Job"}
+            rules={[
+              {
+                required: true,
+                message: "No job provided",
+              },
+            ]}
+          >
+            <Select
+              placeholder={"Select the job"}
+              options={jobsList}
+              loading={jobFetching}
+              disabled={jobFetching}
+            />
+          </Form.Item>
+          <Form.Item
+            name="start_date"
+            label={"From Meeting time"}
+            rules={[
+              {
+                required: true,
+                message: "No time provided",
+              },
+            ]}
+          >
+            <DatePicker format="YYYY-MM-DD HH:mm:ss" showTime />
+          </Form.Item>
+          <Form.Item
+            name="end_date"
+            label={"To Meeting time"}
+            rules={[
+              {
+                required: true,
+                message: "No time provided",
+              },
+            ]}
+          >
+            <DatePicker format="YYYY-MM-DD HH:mm:ss" showTime />
+          </Form.Item>
+          <Form.Item
+            name="location"
+            label={"Location"}
+            rules={[
+              {
+                required: true,
+                message: "No location name provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter location for interview"} />
+          </Form.Item>
+          <Form.Item
+            name="status"
+            label={"Interview Status"}
+            rules={[
+              {
+                required: true,
+                message: "No interview status provided",
+              },
+            ]}
+          >
+            <Select
+              placeholder={"Select the status of interview"}
+              options={status}
+            />
+          </Form.Item>
+          <Form.Item
+            className="grid-2-column"
+            name="comment"
+            label={"Comments"}
+          >
+            <TextArea
+              placeholder="Enter the comments for interview"
+              autoSize={{ minRows: 3 }}
+            />
           </Form.Item>
           <div
             className="flex-at-end medium-margin-top"
@@ -164,7 +260,7 @@ const RecruitmentInterviewsForm = ({
               htmlType="submit"
               loading={isLoading}
             >
-              {editData ? "Update Client" : "Create Client"}
+              {editData ? "Update Interview" : "Create Interview"}
             </Button>
           </div>
         </Form>

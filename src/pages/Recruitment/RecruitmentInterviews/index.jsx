@@ -4,11 +4,21 @@ import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../RecruitmentDashBoard/constants";
-import { Button, Input, message, Modal, Pagination, Table } from "antd";
+import {
+  Button,
+  Divider,
+  Input,
+  message,
+  Modal,
+  Pagination,
+  Table,
+} from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import RecruitmentInterviewsForm from "./recruitmentinterviewscreate";
 import axios from "axios";
 import dayjs from "dayjs";
+import { useQuery } from "react-query";
+import { string } from "../../../utilities";
 import "./recruitmentinterviews.css";
 
 const RecruitmentInterviews = () => {
@@ -26,6 +36,47 @@ const RecruitmentInterviews = () => {
   const [deletionData, setDeletionData] = useState(null);
   const [deleteModal, toggleDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [isCommentModal, toggleCommentModal] = useState(false);
+
+  const { data: clientsList, isFetching: clientFetching } = useQuery(
+    ["clients"],
+    () =>
+      axios.get("/api/client", {
+        headers: {
+          Authorization: token,
+        },
+      }),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: item.name,
+          value: item.id,
+        }));
+        return newData;
+      },
+    }
+  );
+
+  const { data: jobsList, isFetching: jobFetching } = useQuery(
+    ["jobs"],
+    () =>
+      axios.get("/api/recruitment/job", {
+        headers: {
+          Authorization: token,
+        },
+      }),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: item.designation,
+          value: item.id,
+        }));
+        return newData;
+      },
+    }
+  );
 
   useEffect(() => {
     document.title = "Recruitment - Interviews";
@@ -49,6 +100,15 @@ const RecruitmentInterviews = () => {
   const onChange = (page) => {
     setPage(page);
     getData(name, page);
+  };
+
+  const renderStatus = (record) => {
+    if (record.status === 0)
+      return <div className="bold text-red">Arranged</div>;
+    if (record.status === 1)
+      return <div className="bold text-blue">In Progress</div>;
+    if (record.status === 2)
+      return <div className="bold text-green">Completed</div>;
   };
 
   const getData = async (name, page) => {
@@ -80,13 +140,9 @@ const RecruitmentInterviews = () => {
     }
   };
 
-  //   <div className="very-small-text text-grey bold">
-  //   {dayjs(record.createdAt).format("llll")}
-  // </div>
-
   const columns = [
     {
-      title: "Name",
+      title: "Interview Mode",
       render: (record) => (
         <div className="text-black bold">{record.interview}</div>
       ),
@@ -113,21 +169,40 @@ const RecruitmentInterviews = () => {
     },
     {
       title: "Client name",
-      render: (record) => <div className="text-grey">{record.client}</div>,
+      render: (record) => (
+        <div className="text-grey">
+          {
+            clientsList?.filter((item) => item.value === record.client)[0]
+              ?.label
+          }
+        </div>
+      ),
+    },
+    {
+      title: "Job Title",
+      render: (record) => (
+        <div className="text-grey">
+          {jobsList?.filter((item) => item.value === record.job)[0]?.label}
+        </div>
+      ),
     },
     {
       title: "Status",
-      render: (record) =>
-        record.isActive ? (
-          <div className="text-green">Active</div>
-        ) : (
-          <div className="text-red">Inactive</div>
-        ),
+      render: (record) => renderStatus(record),
     },
     {
       title: "Actions",
       render: (record) => (
         <div className="flex-small-gap">
+          <Button
+            type="primary"
+            onClick={() => {
+              toggleCommentModal(true);
+              setEditData(record);
+            }}
+          >
+            View Comments
+          </Button>
           <Button
             type="primary"
             shape="round"
@@ -157,7 +232,7 @@ const RecruitmentInterviews = () => {
     setDeleteLoading(true);
     await axios({
       method: "delete",
-      url: `/api/client/${deletionData.id}`,
+      url: `/api/interview/${deletionData.id}`,
       headers: {
         Accept: "application/json",
         "Content-Type": "multipart/form-data",
@@ -197,6 +272,10 @@ const RecruitmentInterviews = () => {
           editData={editData}
           setEditData={setEditData}
           getData={refetch}
+          clientsList={clientsList}
+          clientFetching={clientFetching}
+          jobsList={jobsList}
+          jobFetching={jobFetching}
         />
       )}
       <Modal
@@ -208,7 +287,47 @@ const RecruitmentInterviews = () => {
         okType={"danger"}
         confirmLoading={deleteLoading}
       >
-        <p>{`Are you sure you want to delete "${deletionData?.name}" from interview data?`}</p>
+        <p>{`Are you sure you want to delete "${deletionData?.candidate}" from interview data?`}</p>
+      </Modal>
+      <Modal
+        title={"More information"}
+        open={isCommentModal}
+        onCancel={() => {
+          setEditData(null);
+          toggleCommentModal(false);
+        }}
+        footer={false}
+        centered
+      >
+        <div className="small-margin"></div>
+        <Divider />
+        <div className="small-margin flex-space-evenly">
+          <div>
+            <div className="bolder text-black">Candidate</div>
+            <div className="bold text-grey medium-text">
+              {editData?.candidate}
+            </div>
+          </div>
+          <div>
+            <div className="bolder text-black">Client</div>
+            <div className="bold text-grey medium-text">{editData?.client}</div>
+          </div>
+          <div>
+            <div className="bolder text-black">Status</div>
+            <div className="bold text-grey medium-text">
+              {editData && renderStatus(editData)}
+            </div>
+          </div>
+        </div>
+        <Divider orientation="left" orientationMargin="0">
+          <div className="bolder text-black">Comments</div>
+        </Divider>
+        <div
+          className="bold text-grey text-padding-left"
+          style={{ textAlign: "justify" }}
+        >
+          {editData?.comment && string(editData.comment, "loaded")}
+        </div>
       </Modal>
       <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
       <m.div

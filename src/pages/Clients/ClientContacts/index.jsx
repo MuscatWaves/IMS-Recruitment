@@ -117,10 +117,6 @@ const ClientContacts = () => {
       ),
     },
     {
-      title: "Client",
-      render: (record) => <div className="text-grey">{record.client}</div>,
-    },
-    {
       title: "Actions",
       render: (record) => (
         <div className="flex-small-gap">
