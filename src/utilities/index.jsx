@@ -94,6 +94,12 @@ export const removeCookie = (navigate, logOut) => {
   navigate(logOut);
 };
 
+export const checkFilterActive = (data) => {
+  const result = Object.keys(data).map((key) => data[key]);
+  const checkResult = result.filter((data) => data !== "");
+  return checkResult.length !== 0;
+};
+
 export const checkImageIcon = (gender) => {
   if (!gender) {
     return noGenderImage;

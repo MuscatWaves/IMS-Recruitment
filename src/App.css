@@ -110,6 +110,7 @@ body {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 1rem;
 }
 
 .flex-small-gap-column {
@@ -166,6 +167,26 @@ body {
   padding-left: 1rem;
 }
 
+.filter-box-inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.filter-box {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.774);
+}
+
+.filter-button--active {
+  background-color: #1fc264;
+  border: #1fc264 1px solid;
+  box-shadow: none;
+}
+
 /* Misc */
 
 .hidden {
@@ -209,7 +230,7 @@ body {
 }
 
 .ant-form-item {
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .pointer {

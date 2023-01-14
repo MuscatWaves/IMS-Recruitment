@@ -6,7 +6,6 @@ import { AnimatePresence, m } from "framer-motion";
 import Header from "../../../components/Header";
 import { cards, container, item } from "./constants";
 import { Button } from "antd";
-import Footer from "../../../components/Footer";
 import "./DashBoard.css";
 
 const RecruitmentDashBoard = () => {
@@ -63,7 +62,6 @@ const RecruitmentDashBoard = () => {
           ))}
         </m.div>
       </AnimatePresence>
-      <Footer />
     </m.div>
   );
 };

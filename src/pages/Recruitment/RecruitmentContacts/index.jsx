@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { m } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
@@ -11,14 +11,17 @@ import userImage from "../../../images/user-no-image.png";
 import {
   FaAddressBook,
   FaFax,
+  FaFilter,
   FaPhoneAlt,
   FaSkype,
   FaTwitter,
 } from "react-icons/fa";
-import { AiFillMail } from "react-icons/ai";
+import { AiFillMail, AiOutlineSearch } from "react-icons/ai";
 import RecruitmentContactForm from "./recruitmentcontactcreate";
 import { useQuery } from "react-query";
 import "./recruitmentcontacts.css";
+import RecruitmentContactsFilter from "./recruitmentContactsFilter";
+import { checkFilterActive } from "../../../utilities";
 
 const RecruitmentContacts = () => {
   const cookies = new Cookies();
@@ -35,15 +38,24 @@ const RecruitmentContacts = () => {
   const [deletionData, setDeletionData] = useState(null);
   const [deleteModal, toggleDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [filter, setFilter] = useState({
+    search: "",
+    name: "",
+    email: "",
+    department: "",
+    client: "",
+    jobtitle: "",
+  });
+  const [isFilterModal, toggleFilterModal] = useState(false);
 
   useEffect(() => {
     document.title = "Recruitment - Contacts";
-    refetch();
+    refetch(filter);
     // eslint-disable-next-line
   }, []);
 
-  const refetch = () => {
-    getData(name, page);
+  const refetch = (values) => {
+    getData(values, page);
   };
 
   const navigation = [
@@ -57,7 +69,7 @@ const RecruitmentContacts = () => {
 
   const onChange = (page) => {
     setPage(page);
-    getData(name, page);
+    getData(filter, page);
   };
 
   const { data: clientsList } = useQuery(
@@ -80,7 +92,7 @@ const RecruitmentContacts = () => {
     }
   );
 
-  const getData = async (name, page) => {
+  const getData = async (values, page) => {
     setLoading(true);
     setData([]);
     let config = {
@@ -90,7 +102,7 @@ const RecruitmentContacts = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/recruitment/contact?page=${page}`,
+        `/api/recruitment/contact?page=${page}&search=${values.search}&name=${values.name}&email=${values.email}&department=${values.department}&client=${values.client}&jobtitle=${values.jobtitle}`,
         config
       );
       if (Data.status === 200) {
@@ -207,6 +219,7 @@ const RecruitmentContacts = () => {
       .catch(function (response) {
         message.error("Something Went Wrong!", "error");
         setDeleteLoading(false);
+        setData([]);
       });
   };
 
@@ -230,6 +243,7 @@ const RecruitmentContacts = () => {
           editData={editData}
           setEditData={setEditData}
           getData={refetch}
+          filterValues={filter}
         />
       )}
       <Modal
@@ -321,18 +335,28 @@ const RecruitmentContacts = () => {
         <m.div className="title-text primary-color" variants={item}>
           Contacts
         </m.div>
-        <m.div className="recruitment-filter-nav-header" variants={item}>
+        <m.div
+          className="recruitment-filter-nav-header-without"
+          variants={item}
+        >
           <BreadCrumb items={navigation} />
           <div className="flex-small-gap">
             <form
-              className="hidden"
               onSubmit={(e) => {
                 e.preventDefault();
-                console.log(name);
+                refetch({
+                  search: name,
+                  name: filter?.name || "",
+                  email: filter?.email || "",
+                  department: filter?.department || "",
+                  client: filter?.client || "",
+                  jobtitle: filter?.jobtitle || "",
+                });
               }}
             >
               <Input
-                placeholder="Search here!"
+                placeholder="Search"
+                prefix={<AiOutlineSearch className="large-text" />}
                 size="large"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -345,6 +369,16 @@ const RecruitmentContacts = () => {
               type="primary"
               size="large"
               onClick={() => {
+                toggleFilterModal(true);
+              }}
+              className={checkFilterActive(filter) && "filter-button--active"}
+            >
+              <FaFilter className="medium-text" />
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => {
                 setEditData(null);
                 toggleModal(true);
               }}
@@ -353,6 +387,19 @@ const RecruitmentContacts = () => {
             </Button>
           </div>
         </m.div>
+        <AnimatePresence>
+          {isFilterModal && (
+            <RecruitmentContactsFilter
+              isFilterModal={isFilterModal}
+              toggleFilterModal={toggleFilterModal}
+              filterData={filter}
+              setFilterData={setFilter}
+              getData={refetch}
+              loading={isLoading}
+              clientsList={clientsList}
+            />
+          )}
+        </AnimatePresence>
         <m.div variants={item}>
           <Table
             dataSource={data}

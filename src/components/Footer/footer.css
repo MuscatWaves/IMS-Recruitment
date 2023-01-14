@@ -1,8 +1,10 @@
 .footer {
+  position: relative;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
+  left: 0;
   bottom: 0;
   font-weight: 600;
   color: var(--light-grey-color);

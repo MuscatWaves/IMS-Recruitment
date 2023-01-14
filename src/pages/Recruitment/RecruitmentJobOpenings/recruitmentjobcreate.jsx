@@ -11,7 +11,6 @@ import {
 } from "antd";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { useQuery } from "react-query";
 
 const RecruitmentJobForm = ({
   isModalOpen,
@@ -19,6 +18,8 @@ const RecruitmentJobForm = ({
   editData,
   setEditData,
   getData,
+  filterValues,
+  contactResult,
 }) => {
   const [form] = Form.useForm();
   const [isLoading, setLoading] = useState(false);
@@ -30,25 +31,6 @@ const RecruitmentJobForm = ({
     setModal(false);
     setEditData(null);
   };
-
-  const { data: contactResult } = useQuery(
-    ["contactResult"],
-    () =>
-      axios.get("/api/recruitment/client/contact?page=0", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.name,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
 
   const handleUpdateUser = async (values) => {
     var data = JSON.stringify({
@@ -122,7 +104,7 @@ const RecruitmentJobForm = ({
         message.success(response.data.message);
         setLoading(false);
         onClose();
-        getData();
+        getData(filterValues);
       })
       .catch(function (error) {
         message.error("Something Went Wrong!", "error");
