@@ -306,6 +306,10 @@ const RecruitmentJobOpenings = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                setFilter({
+                  ...filter,
+                  search: name,
+                });
                 refetch({
                   designation: filter?.designation || "",
                   gender: filter?.gender || "",

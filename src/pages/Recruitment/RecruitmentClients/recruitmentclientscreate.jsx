@@ -10,6 +10,7 @@ const RecruitmentClientsForm = ({
   editData,
   setEditData,
   getData,
+  filter
 }) => {
   const [form] = Form.useForm();
   const [isLoading, setLoading] = useState(false);
@@ -47,7 +48,7 @@ const RecruitmentClientsForm = ({
         message.success(response.data.message);
         setLoading(false);
         onClose();
-        getData();
+        getData(filter);
       })
       .catch(function (error) {
         message.error("Something Went Wrong!", "error");

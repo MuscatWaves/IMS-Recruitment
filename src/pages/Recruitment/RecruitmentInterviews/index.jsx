@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { m } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
@@ -18,8 +18,11 @@ import RecruitmentInterviewsForm from "./recruitmentinterviewscreate";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useQuery } from "react-query";
-import { string } from "../../../utilities";
+import { checkFilterActive, string } from "../../../utilities";
 import "./recruitmentinterviews.css";
+import { FaFilter } from "react-icons/fa";
+import { AiOutlineSearch } from "react-icons/ai";
+import RecruitmentInterviewFilter from "./recruitmentInterviewFilter";
 
 const RecruitmentInterviews = () => {
   const cookies = new Cookies();
@@ -37,6 +40,14 @@ const RecruitmentInterviews = () => {
   const [deleteModal, toggleDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isCommentModal, toggleCommentModal] = useState(false);
+  const [filter, setFilter] = useState({
+    search: "",
+    candidate: "",
+    client: "",
+    job: "",
+    interview: "",
+  });
+  const [isFilterModal, toggleFilterModal] = useState(false);
 
   const { data: clientsList, isFetching: clientFetching } = useQuery(
     ["clients"],
@@ -80,12 +91,12 @@ const RecruitmentInterviews = () => {
 
   useEffect(() => {
     document.title = "Recruitment - Interviews";
-    refetch();
+    refetch(filter);
     // eslint-disable-next-line
   }, []);
 
-  const refetch = () => {
-    getData(name, page);
+  const refetch = (values) => {
+    getData(values, page);
   };
 
   const navigation = [
@@ -99,7 +110,7 @@ const RecruitmentInterviews = () => {
 
   const onChange = (page) => {
     setPage(page);
-    getData(name, page);
+    getData(filter, page);
   };
 
   const renderStatus = (record) => {
@@ -111,7 +122,7 @@ const RecruitmentInterviews = () => {
       return <div className="bold text-green">Completed</div>;
   };
 
-  const getData = async (name, page) => {
+  const getData = async (values, page) => {
     setLoading(true);
     setData([]);
     let config = {
@@ -120,7 +131,10 @@ const RecruitmentInterviews = () => {
       },
     };
     try {
-      const Data = await axios.get(`/api/interview?page=${page}`, config);
+      const Data = await axios.get(
+        `/api/interview?page=${page}&search=${values.search}&candidate=${values.candidate}&client=${values.client}&job=${values.job}&interview=${values.interview}`,
+        config
+      );
       if (Data.status === 200) {
         setLoading(false);
         setData(Data.data.data);
@@ -276,6 +290,7 @@ const RecruitmentInterviews = () => {
           clientFetching={clientFetching}
           jobsList={jobsList}
           jobFetching={jobFetching}
+          filter={filter}
         />
       )}
       <Modal
@@ -339,18 +354,31 @@ const RecruitmentInterviews = () => {
         <m.div className="title-text primary-color" variants={item}>
           Interviews
         </m.div>
-        <m.div className="recruitment-filter-nav-header" variants={item}>
+        <m.div
+          className="recruitment-filter-nav-header-without"
+          variants={item}
+        >
           <BreadCrumb items={navigation} />
           <div className="flex-small-gap">
             <form
-              className="hidden"
               onSubmit={(e) => {
                 e.preventDefault();
-                console.log(name);
+                setFilter({
+                  ...filter,
+                  search: name,
+                });
+                refetch({
+                  search: name,
+                  candidate: filter?.candidate || "",
+                  client: filter?.client || "",
+                  job: filter?.job || "",
+                  interview: filter?.interview || "",
+                });
               }}
             >
               <Input
-                placeholder="Search here!"
+                placeholder="Search"
+                prefix={<AiOutlineSearch className="large-text" />}
                 size="large"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -363,6 +391,16 @@ const RecruitmentInterviews = () => {
               type="primary"
               size="large"
               onClick={() => {
+                toggleFilterModal(true);
+              }}
+              className={checkFilterActive(filter) && "filter-button--active"}
+            >
+              <FaFilter className="medium-text" />
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => {
                 setEditData(null);
                 toggleModal(true);
               }}
@@ -371,6 +409,20 @@ const RecruitmentInterviews = () => {
             </Button>
           </div>
         </m.div>
+        <AnimatePresence>
+          {isFilterModal && (
+            <RecruitmentInterviewFilter
+              isFilterModal={isFilterModal}
+              toggleFilterModal={toggleFilterModal}
+              filterData={filter}
+              setFilterData={setFilter}
+              getData={refetch}
+              loading={isLoading}
+              clientResult={clientsList}
+              jobResult={jobsList}
+            />
+          )}
+        </AnimatePresence>
         <m.div variants={item}>
           <Table
             dataSource={data}

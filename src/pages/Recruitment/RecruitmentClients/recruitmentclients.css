@@ -5,12 +5,9 @@
   padding: 2rem;
 }
 
-.recruitment-filter-nav-header {
+.recruitment-filter-nav-header-without {
   display: flex;
   justify-content: space-between;
-  padding: 1rem;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.774);
 }
 
 .pagination {

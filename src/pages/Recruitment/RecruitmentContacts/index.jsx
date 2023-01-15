@@ -344,6 +344,10 @@ const RecruitmentContacts = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                setFilter({
+                  ...filter,
+                  search: name,
+                });
                 refetch({
                   search: name,
                   name: filter?.name || "",

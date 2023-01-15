@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { m } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
@@ -10,6 +10,10 @@ import axios from "axios";
 import RecruitmentClientsForm from "./recruitmentclientscreate";
 import dayjs from "dayjs";
 import "./recruitmentclients.css";
+import { FaFilter } from "react-icons/fa";
+import { checkFilterActive } from "../../../utilities";
+import { AiOutlineSearch } from "react-icons/ai";
+import RecruitmentClientsFilter from "./recruitmentClientsFilter";
 
 const RecruitmentClients = () => {
   const cookies = new Cookies();
@@ -26,15 +30,21 @@ const RecruitmentClients = () => {
   const [deletionData, setDeletionData] = useState(null);
   const [deleteModal, toggleDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [filter, setFilter] = useState({
+    search: "",
+    name: "",
+    email: "",
+  });
+  const [isFilterModal, toggleFilterModal] = useState(false);
 
   useEffect(() => {
     document.title = "Recruitment - Clients";
-    refetch();
+    refetch(filter);
     // eslint-disable-next-line
   }, []);
 
-  const refetch = () => {
-    getData(name, page);
+  const refetch = (values) => {
+    getData(values, page);
   };
 
   const navigation = [
@@ -48,10 +58,10 @@ const RecruitmentClients = () => {
 
   const onChange = (page) => {
     setPage(page);
-    getData(name, page);
+    getData(filter, page);
   };
 
-  const getData = async (name, page) => {
+  const getData = async (values, page) => {
     setLoading(true);
     setData([]);
     let config = {
@@ -60,7 +70,10 @@ const RecruitmentClients = () => {
       },
     };
     try {
-      const Data = await axios.get(`/api/client?page=${page}`, config);
+      const Data = await axios.get(
+        `/api/client?page=${page}&search=${values.search}&name=${values.name}&email=${values.email}`,
+        config
+      );
       if (Data.status === 200) {
         setLoading(false);
         setData(Data.data.data);
@@ -178,6 +191,7 @@ const RecruitmentClients = () => {
           editData={editData}
           setEditData={setEditData}
           getData={refetch}
+          filter={filter}
         />
       )}
       <Modal
@@ -201,18 +215,29 @@ const RecruitmentClients = () => {
         <m.div className="title-text primary-color" variants={item}>
           Clients
         </m.div>
-        <m.div className="recruitment-filter-nav-header" variants={item}>
+        <m.div
+          className="recruitment-filter-nav-header-without"
+          variants={item}
+        >
           <BreadCrumb items={navigation} />
           <div className="flex-small-gap">
             <form
-              className="hidden"
               onSubmit={(e) => {
                 e.preventDefault();
-                console.log(name);
+                setFilter({
+                  ...filter,
+                  search: name,
+                });
+                refetch({
+                  search: name,
+                  name: filter?.name || "",
+                  email: filter?.email || "",
+                });
               }}
             >
               <Input
-                placeholder="Search here!"
+                placeholder="Search"
+                prefix={<AiOutlineSearch className="large-text" />}
                 size="large"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -225,6 +250,16 @@ const RecruitmentClients = () => {
               type="primary"
               size="large"
               onClick={() => {
+                toggleFilterModal(true);
+              }}
+              className={checkFilterActive(filter) && "filter-button--active"}
+            >
+              <FaFilter className="medium-text" />
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => {
                 setEditData(null);
                 toggleModal(true);
               }}
@@ -233,6 +268,18 @@ const RecruitmentClients = () => {
             </Button>
           </div>
         </m.div>
+        <AnimatePresence>
+          {isFilterModal && (
+            <RecruitmentClientsFilter
+              isFilterModal={isFilterModal}
+              toggleFilterModal={toggleFilterModal}
+              filterData={filter}
+              setFilterData={setFilter}
+              getData={refetch}
+              loading={isLoading}
+            />
+          )}
+        </AnimatePresence>
         <m.div variants={item}>
           <Table
             dataSource={data}
