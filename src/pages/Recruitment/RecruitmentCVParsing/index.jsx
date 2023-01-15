@@ -4,27 +4,24 @@ import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../RecruitmentDashBoard/constants";
-import {
-  Button,
-  Divider,
-  Input,
-  message,
-  Modal,
-  Pagination,
-  Table,
-} from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import RecruitmentInterviewsForm from "./recruitmentinterviewscreate";
+import { Button, Input, message, Pagination, Table, Tooltip } from "antd";
+import { HiMail } from "react-icons/hi";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useQuery } from "react-query";
-import { checkFilterActive, string } from "../../../utilities";
-import "./recruitmentinterviews.css";
+import {
+  checkFilterActive,
+  checkImageIcon,
+  formatInput,
+} from "../../../utilities";
 import { FaFilter } from "react-icons/fa";
-import { AiOutlineSearch } from "react-icons/ai";
-import RecruitmentInterviewFilter from "./recruitmentInterviewFilter";
+import { RiMessage3Fill } from "react-icons/ri";
+import { AiOutlineExclamationCircle, AiOutlineSearch } from "react-icons/ai";
+import CVParsingFilter from "./cvParsingFilter";
+import moment from "moment";
+import "./cvParsing.css";
 
-const RecruitmentInterviews = () => {
+const RecruitmentCVParsing = () => {
   const cookies = new Cookies();
   const token = cookies.get("token");
   var localizedFormat = require("dayjs/plugin/localizedFormat");
@@ -34,12 +31,6 @@ const RecruitmentInterviews = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [isModalOpen, toggleModal] = useState(false);
-  const [editData, setEditData] = useState(null);
-  const [deletionData, setDeletionData] = useState(null);
-  const [deleteModal, toggleDeleteModal] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [isCommentModal, toggleCommentModal] = useState(false);
   const [filter, setFilter] = useState({
     search: "",
     candidate: "",
@@ -49,7 +40,7 @@ const RecruitmentInterviews = () => {
   });
   const [isFilterModal, toggleFilterModal] = useState(false);
 
-  const { data: clientsList, isFetching: clientFetching } = useQuery(
+  const { data: clientsList } = useQuery(
     ["clients"],
     () =>
       axios.get("/api/client", {
@@ -69,7 +60,7 @@ const RecruitmentInterviews = () => {
     }
   );
 
-  const { data: jobsList, isFetching: jobFetching } = useQuery(
+  const { data: jobsList } = useQuery(
     ["jobs"],
     () =>
       axios.get("/api/recruitment/job", {
@@ -89,28 +80,8 @@ const RecruitmentInterviews = () => {
     }
   );
 
-  const { data: candidateList, isFetching: candidateFetching } = useQuery(
-    ["candidates"],
-    () =>
-      axios.get("/api/cv", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      refetchOnWindowFocus: false,
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.designation,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
-
   useEffect(() => {
-    document.title = "Recruitment - Interviews";
+    document.title = "Recruitment - CV Parsing";
     refetch(filter);
     // eslint-disable-next-line
   }, []);
@@ -123,7 +94,7 @@ const RecruitmentInterviews = () => {
     { id: 0, name: "Dashboard", url: "/recruitment/dashboard" },
     {
       id: 1,
-      name: "Interviews",
+      name: "CV parsing",
       active: true,
     },
   ];
@@ -131,15 +102,6 @@ const RecruitmentInterviews = () => {
   const onChange = (page) => {
     setPage(page);
     getData(filter, page);
-  };
-
-  const renderStatus = (record) => {
-    if (record.status === 0)
-      return <div className="bold text-red">Arranged</div>;
-    if (record.status === 1)
-      return <div className="bold text-blue">In Progress</div>;
-    if (record.status === 2)
-      return <div className="bold text-green">Completed</div>;
   };
 
   const getData = async (values, page) => {
@@ -152,7 +114,7 @@ const RecruitmentInterviews = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/interview?page=${page}&search=${values.search}&candidate=${values.candidate}&client=${values.client}&job=${values.job}&interview=${values.interview}`,
+        `/api/cv?page=${page}&search=&JobCategory=&Age=&JobTitle=&Nationality=&Gender=&MaritalStatus=&FromDate=&ToDate=&user=`,
         config
       );
       if (Data.status === 200) {
@@ -176,121 +138,186 @@ const RecruitmentInterviews = () => {
 
   const columns = [
     {
-      title: "Interview Mode",
+      title: "Image",
+      width: "120px",
       render: (record) => (
-        <div className="text-black bold">{record.interview}</div>
-      ),
-    },
-    {
-      title: "From",
-      render: (record) => (
-        <div className="text-grey">
-          {dayjs(record.createdAt).format("llll")}
-        </div>
-      ),
-    },
-    {
-      title: "To",
-      render: (record) => (
-        <div className="text-grey">
-          {dayjs(record.createdAt).format("llll")}
-        </div>
-      ),
-    },
-    {
-      title: "Candidate Name",
-      render: (record) => <div className="text-grey">{record.candidate}</div>,
-    },
-    {
-      title: "Client name",
-      render: (record) => (
-        <div className="text-grey">
-          {
-            clientsList?.filter((item) => item.value === record.client)[0]
-              ?.label
-          }
-        </div>
-      ),
-    },
-    {
-      title: "Job Title",
-      render: (record) => (
-        <div className="text-grey">
-          {jobsList?.filter((item) => item.value === record.job)[0]?.label}
-        </div>
-      ),
-    },
-    {
-      title: "Status",
-      render: (record) => renderStatus(record),
-    },
-    {
-      title: "Actions",
-      render: (record) => (
-        <div className="flex-small-gap">
-          <Button
-            type="primary"
+        <Tooltip
+          title="Click to copy the Oman Jobs profile"
+          placement="right"
+          mouseEnterDelay={1}
+        >
+          <img
+            className="image-user pointer"
+            src={
+              record.image
+                ? `/files/images/${record.image}`
+                : checkImageIcon(record.gender)
+            }
+            alt="user"
+            width={90}
             onClick={() => {
-              toggleCommentModal(true);
-              setEditData(record);
+              const name = `${record.name} ${record.job.replace("/", "-")}`
+                .replace(/\s+/g, "-")
+                .replace(/\./g, "");
+              message.success("Link copied to your clipboard");
+              navigator.clipboard.writeText(
+                `https://share.omanjobs.om/cv/${record.id}/${name}`
+              );
             }}
+          />
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Name",
+      width: "250px",
+      render: (record) => (
+        <div
+          className="pointer"
+          // onClick={() => navigateTo(`/searchcv/profile/app/${record.id}`)}
+        >
+          <div className="text-black">{record.name}</div>
+          <div className="small-text text-grey">{`${record.nationality}, ${
+            record.gender
+          } (${moment().diff(
+            moment(record.DOB).format("YYYY-MM-DD"),
+            "years"
+          )})`}</div>
+        </div>
+      ),
+    },
+    {
+      title: "Job",
+      render: (record) => (
+        <div className="">
+          {record.job ? (
+            formatInput(record.job)
+          ) : (
+            <div className="flex-small-gap text-red">
+              <AiOutlineExclamationCircle style={{ fontSize: "26px" }} />
+              <div className="text-red">Not Provided</div>
+            </div>
+          )}
+        </div>
+      ),
+      width: "250px",
+    },
+    // {
+    //   title: "Education",
+    //   render: (record) => (
+    //     <div className="">
+    //       {record.educationname ? (
+    //         formatInput(record.educationname)
+    //       ) : (
+    //         <div className="flex-small-gap text-red">
+    //           <AiOutlineExclamationCircle style={{ fontSize: "26px" }} />
+    //           <div className="text-red">Not Provided</div>
+    //         </div>
+    //       )}
+    //     </div>
+    //   ),
+    //   ellipsis: true,
+    // },
+    {
+      title: "Skills",
+      render: (record) =>
+        record.skills ? (
+          // eslint-disable-next-line
+          formatInput(record.skills).replace(/[^\x00-\x7F]t/g, ",")
+        ) : (
+          <div className="flex-small-gap text-red">
+            <AiOutlineExclamationCircle style={{ fontSize: "26px" }} />
+            <div className="text-red">Not Provided</div>
+          </div>
+        ),
+      ellipsis: true,
+    },
+    {
+      title: "Email",
+      render: (record) => (
+        <div className="flex-small-gap-column">
+          <div
+            className="pointer link flex-small-gap"
+            onClick={() =>
+              window.open(
+                `mailto:${record.email}?subject=${encodeURIComponent(
+                  "Oman Jobs"
+                )}&body=${encodeURIComponent("For Recruiter - Write here")}`
+              )
+            }
+            title={record.email}
           >
-            View Comments
-          </Button>
-          <Button
-            type="primary"
-            shape="round"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setEditData(record);
-              toggleModal(true);
-            }}
-          />
-          <Button
-            type="primary"
-            shape="round"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => {
-              setDeletionData(record);
-              toggleDeleteModal(true);
-            }}
-          />
+            <HiMail className="large-text" />
+            <div
+              style={{
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {record.email}
+            </div>
+          </div>
+          {record.alt_email && (
+            <div
+              className="pointer link flex-small-gap"
+              onClick={() =>
+                window.open(
+                  `mailto:${record.alt_email}?subject=${encodeURIComponent(
+                    "Oman Jobs"
+                  )}&body=${encodeURIComponent("For Recruiter - Write here")}`
+                )
+              }
+              title={record.alt_email}
+            >
+              <HiMail className="large-text" />
+              <div
+                style={{
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {record.alt_email}
+              </div>
+            </div>
+          )}
         </div>
       ),
-      width: "300px",
+      width: "320px",
+    },
+    {
+      title: "Phone",
+      render: (record) => (
+        <div className="flex-small-gap-column">
+          {record.mobile ? (
+            <div
+              className="pointer link-green flex-small-gap"
+              onClick={() => window.open(`https://wa.me/${record.mobile}`)}
+            >
+              <RiMessage3Fill className="large-text" />
+              {record.mobile}
+            </div>
+          ) : (
+            <div className="flex-small-gap text-red">
+              <AiOutlineExclamationCircle style={{ fontSize: "26px" }} />
+              <div className="text-red">Not Provided</div>
+            </div>
+          )}
+          {record.alt_phone && (
+            <div
+              className="pointer link-green flex-small-gap"
+              onClick={() => window.open(`https://wa.me/${record.alt_phone}`)}
+            >
+              <RiMessage3Fill className="large-text" />
+              {record.alt_phone}
+            </div>
+          )}
+        </div>
+      ),
+      width: "200px",
     },
   ];
-
-  const deleteData = async () => {
-    setDeleteLoading(true);
-    await axios({
-      method: "delete",
-      url: `/api/interview/${deletionData.id}`,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-        Authorization: token,
-      },
-    })
-      .then(function (response) {
-        message.success("The data has been sucessfully deleted");
-        toggleDeleteModal(false);
-        setDeletionData("");
-        refetch();
-        setDeleteLoading(false);
-      })
-      .catch(function (response) {
-        message.error("Something Went Wrong!", "error");
-        setDeleteLoading(false);
-      });
-  };
-
-  const handleCancel = () => {
-    toggleDeleteModal(false);
-    setDeleteLoading(false);
-    setDeletionData(null);
-  };
 
   return (
     <m.div
@@ -299,7 +326,7 @@ const RecruitmentInterviews = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <RecruitmentInterviewsForm
           isModalOpen={isModalOpen}
           setModal={toggleModal}
@@ -310,12 +337,10 @@ const RecruitmentInterviews = () => {
           clientFetching={clientFetching}
           jobsList={jobsList}
           jobFetching={jobFetching}
-          candidateList={candidateList}
-          candidateFetching={candidateFetching}
           filter={filter}
         />
-      )}
-      <Modal
+      )} */}
+      {/* <Modal
         title="Delete Confirmation"
         open={deleteModal}
         onOk={deleteData}
@@ -325,47 +350,7 @@ const RecruitmentInterviews = () => {
         confirmLoading={deleteLoading}
       >
         <p>{`Are you sure you want to delete "${deletionData?.candidate}" from interview data?`}</p>
-      </Modal>
-      <Modal
-        title={"More information"}
-        open={isCommentModal}
-        onCancel={() => {
-          setEditData(null);
-          toggleCommentModal(false);
-        }}
-        footer={false}
-        centered
-      >
-        <div className="small-margin"></div>
-        <Divider />
-        <div className="small-margin flex-space-evenly">
-          <div>
-            <div className="bolder text-black">Candidate</div>
-            <div className="bold text-grey medium-text">
-              {editData?.candidate}
-            </div>
-          </div>
-          <div>
-            <div className="bolder text-black">Client</div>
-            <div className="bold text-grey medium-text">{editData?.client}</div>
-          </div>
-          <div>
-            <div className="bolder text-black">Status</div>
-            <div className="bold text-grey medium-text">
-              {editData && renderStatus(editData)}
-            </div>
-          </div>
-        </div>
-        <Divider orientation="left" orientationMargin="0">
-          <div className="bolder text-black">Comments</div>
-        </Divider>
-        <div
-          className="bold text-grey text-padding-left"
-          style={{ textAlign: "justify" }}
-        >
-          {editData?.comment && string(editData.comment, "loaded")}
-        </div>
-      </Modal>
+      </Modal> */}
       <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
       <m.div
         className="recruitment-contacts"
@@ -374,7 +359,7 @@ const RecruitmentInterviews = () => {
         animate="show"
       >
         <m.div className="title-text primary-color" variants={item}>
-          Interviews
+          CV Parsing
         </m.div>
         <m.div
           className="recruitment-filter-nav-header-without"
@@ -419,7 +404,7 @@ const RecruitmentInterviews = () => {
             >
               <FaFilter className="medium-text" />
             </Button>
-            <Button
+            {/* <Button
               type="primary"
               size="large"
               onClick={() => {
@@ -428,12 +413,12 @@ const RecruitmentInterviews = () => {
               }}
             >
               + Create
-            </Button>
+            </Button> */}
           </div>
         </m.div>
         <AnimatePresence>
           {isFilterModal && (
-            <RecruitmentInterviewFilter
+            <CVParsingFilter
               isFilterModal={isFilterModal}
               toggleFilterModal={toggleFilterModal}
               filterData={filter}
@@ -442,8 +427,6 @@ const RecruitmentInterviews = () => {
               loading={isLoading}
               clientResult={clientsList}
               jobResult={jobsList}
-              candidateList={candidateList}
-              candidateFetching={candidateFetching}
             />
           )}
         </AnimatePresence>
@@ -472,4 +455,4 @@ const RecruitmentInterviews = () => {
   );
 };
 
-export default RecruitmentInterviews;
+export default RecruitmentCVParsing;

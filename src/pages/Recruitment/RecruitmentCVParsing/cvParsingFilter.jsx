@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Divider, Form, Input, Select } from "antd";
 import { m } from "framer-motion";
 
-const RecruitmentInterviewFilter = ({
+const CVParsingFilter = ({
   filterData,
   setFilterData,
   getData,
@@ -11,8 +11,6 @@ const RecruitmentInterviewFilter = ({
   loading,
   clientResult,
   jobResult,
-  candidateList,
-  candidateFetching,
 }) => {
   const [form] = Form.useForm();
 
@@ -67,7 +65,7 @@ const RecruitmentInterviewFilter = ({
         form={form}
         scrollToFirstError={true}
         initialValues={{
-          candidate: filterData?.candidate || null,
+          candidate: filterData?.candidate || "",
           client: filterData?.client || null,
           job: filterData?.job || null,
           interview: filterData?.interview || "",
@@ -75,13 +73,7 @@ const RecruitmentInterviewFilter = ({
       >
         <div className="filter-box-inner">
           <Form.Item name="candidate" label={"Candidate"}>
-            <Select
-              placeholder={"Candidate name"}
-              options={candidateList}
-              loading={candidateFetching}
-              disabled={candidateFetching}
-              allowClear
-            />
+            <Input placeholder={"Candidate name"} />
           </Form.Item>
           <Form.Item name="interview" label={"Interview"}>
             <Input placeholder={"Email of the user"} />
@@ -122,4 +114,4 @@ const RecruitmentInterviewFilter = ({
   );
 };
 
-export default RecruitmentInterviewFilter;
+export default CVParsingFilter;

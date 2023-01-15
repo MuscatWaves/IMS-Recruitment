@@ -14,8 +14,6 @@ const RecruitmentInterviewsForm = ({
   getData,
   clientsList,
   clientFetching,
-  candidateList,
-  candidateFetching,
   jobsList,
   jobFetching,
   filter,
@@ -147,9 +145,12 @@ const RecruitmentInterviewsForm = ({
           >
             <Select
               placeholder={"Select the candidate"}
-              options={candidateList}
-              loading={candidateFetching}
-              disabled={candidateFetching}
+              options={[
+                {
+                  label: "John Doe",
+                  value: 13,
+                },
+              ]}
             />
           </Form.Item>
           <Form.Item

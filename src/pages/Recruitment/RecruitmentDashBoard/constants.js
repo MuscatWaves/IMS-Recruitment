@@ -28,6 +28,12 @@ export const cards = [
     title: "Interview",
     path: "/recruitment/interviews",
   },
+  {
+    id: 5,
+    icon: interviewImage,
+    title: "CV parsing",
+    path: "/recruitment/cvParsing",
+  },
 ];
 
 export const container = {
