@@ -89,26 +89,6 @@ const RecruitmentInterviews = () => {
     }
   );
 
-  const { data: candidateList, isFetching: candidateFetching } = useQuery(
-    ["candidates"],
-    () =>
-      axios.get("/api/cv", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      refetchOnWindowFocus: false,
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.designation,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
-
   useEffect(() => {
     document.title = "Recruitment - Interviews";
     refetch(filter);
@@ -199,7 +179,9 @@ const RecruitmentInterviews = () => {
     },
     {
       title: "Candidate Name",
-      render: (record) => <div className="text-grey">{record.candidate}</div>,
+      render: (record) => (
+        <div className="text-grey">{record.candidateName}</div>
+      ),
     },
     {
       title: "Client name",
@@ -310,8 +292,6 @@ const RecruitmentInterviews = () => {
           clientFetching={clientFetching}
           jobsList={jobsList}
           jobFetching={jobFetching}
-          candidateList={candidateList}
-          candidateFetching={candidateFetching}
           filter={filter}
         />
       )}
@@ -442,8 +422,6 @@ const RecruitmentInterviews = () => {
               loading={isLoading}
               clientResult={clientsList}
               jobResult={jobsList}
-              candidateList={candidateList}
-              candidateFetching={candidateFetching}
             />
           )}
         </AnimatePresence>

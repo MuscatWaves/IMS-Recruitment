@@ -33,52 +33,16 @@ const RecruitmentCVParsing = () => {
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState({
     search: "",
-    candidate: "",
-    client: "",
-    job: "",
-    interview: "",
+    JobCategory: "",
+    Age: "",
+    JobTitle: "",
+    Nationality: "",
+    Gender: "",
+    MaritalStatus: "",
+    FromDate: "",
+    ToDate: "",
   });
   const [isFilterModal, toggleFilterModal] = useState(false);
-
-  const { data: clientsList } = useQuery(
-    ["clients"],
-    () =>
-      axios.get("/api/client", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      refetchOnWindowFocus: false,
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.name,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
-
-  const { data: jobsList } = useQuery(
-    ["jobs"],
-    () =>
-      axios.get("/api/recruitment/job", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      refetchOnWindowFocus: false,
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.designation,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
 
   useEffect(() => {
     document.title = "Recruitment - CV Parsing";
@@ -114,7 +78,7 @@ const RecruitmentCVParsing = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/cv?page=${page}&search=&JobCategory=&Age=&JobTitle=&Nationality=&Gender=&MaritalStatus=&FromDate=&ToDate=&user=`,
+        `/api/cv?page=${page}&search=${values.search}&JobCategory=${values.JobCategory}&Age=${values.Age}&JobTitle=${values.JobTitle}&Nationality=${values.Nationality}&Gender=${values.Gender}&MaritalStatus=${values.MaritalStatus}&FromDate=${values.FromDate}&ToDate=${values.ToDate}&user=`,
         config
       );
       if (Data.status === 200) {
@@ -174,7 +138,12 @@ const RecruitmentCVParsing = () => {
       render: (record) => (
         <div
           className="pointer"
-          // onClick={() => navigateTo(`/searchcv/profile/app/${record.id}`)}
+          onClick={() => {
+            const name = `${record.name} ${record.job.replace("/", "-")}`
+              .replace(/\s+/g, "-")
+              .replace(/\./g, "");
+            window.open(`https://share.omanjobs.om/cv/${record.id}/${name}`);
+          }}
         >
           <div className="text-black">{record.name}</div>
           <div className="small-text text-grey">{`${record.nationality}, ${
@@ -202,22 +171,6 @@ const RecruitmentCVParsing = () => {
       ),
       width: "250px",
     },
-    // {
-    //   title: "Education",
-    //   render: (record) => (
-    //     <div className="">
-    //       {record.educationname ? (
-    //         formatInput(record.educationname)
-    //       ) : (
-    //         <div className="flex-small-gap text-red">
-    //           <AiOutlineExclamationCircle style={{ fontSize: "26px" }} />
-    //           <div className="text-red">Not Provided</div>
-    //         </div>
-    //       )}
-    //     </div>
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "Skills",
       render: (record) =>
@@ -319,6 +272,43 @@ const RecruitmentCVParsing = () => {
     },
   ];
 
+  const { data: nationalityResult } = useQuery(
+    ["nationality"],
+    () => axios.get("https://cvapi.muscatwave.com/api/nationality"),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: `${!item.nationality ? "None" : item.nationality} - (${
+            !item.nationality ? "All" : item.cnt
+          })`,
+          value: item.nationality,
+        }));
+        return newData;
+      },
+    }
+  );
+
+  const { data: jobCategoryResult } = useQuery(
+    ["category"],
+    () => axios.get("https://cvapi.muscatwave.com/api/category"),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: `${!item.category ? "None - (All)" : item.category}${
+            item.category && `(${item.cnt})`
+          }`,
+          value: `${!item.category ? "" : item.category}`,
+        }));
+        newData.shift();
+        return newData;
+      },
+    }
+  );
+
+  console.log(filter);
+
   return (
     <m.div
       initial={{ opacity: 0 }}
@@ -376,10 +366,14 @@ const RecruitmentCVParsing = () => {
                 });
                 refetch({
                   search: name,
-                  candidate: filter?.candidate || "",
-                  client: filter?.client || "",
-                  job: filter?.job || "",
-                  interview: filter?.interview || "",
+                  JobCategory: filter?.JobCategory || "",
+                  Age: filter?.Age || "",
+                  JobTitle: filter?.JobTitle || "",
+                  Nationality: filter?.Nationality || "",
+                  Gender: filter?.Gender || "",
+                  MaritalStatus: filter?.MaritalStatus || "",
+                  FromDate: filter?.FromDate || "",
+                  ToDate: filter?.ToDate || "",
                 });
               }}
             >
@@ -425,8 +419,8 @@ const RecruitmentCVParsing = () => {
               setFilterData={setFilter}
               getData={refetch}
               loading={isLoading}
-              clientResult={clientsList}
-              jobResult={jobsList}
+              nationalityResult={nationalityResult}
+              jobCategoryResult={jobCategoryResult}
             />
           )}
         </AnimatePresence>

@@ -5,6 +5,8 @@ import Cookies from "universal-cookie";
 import dayjs from "dayjs";
 import jwtDecode from "jwt-decode";
 import TextArea from "antd/es/input/TextArea";
+import AsyncSelect from "react-select/async";
+import "./recruitmentinterviews.css";
 
 const RecruitmentInterviewsForm = ({
   isModalOpen,
@@ -25,6 +27,13 @@ const RecruitmentInterviewsForm = ({
   const cookies = new Cookies();
   const token = cookies.get("token");
   const user = token && jwtDecode(token);
+  const [name, setName] = useState(
+    (editData && {
+      label: editData?.candidateName,
+      value: editData?.candidate,
+    }) ||
+      null
+  );
 
   const status = [
     {
@@ -49,11 +58,15 @@ const RecruitmentInterviewsForm = ({
     setEditData(null);
   };
 
-  const handleUpdateUser = async (values, status = editData?.status) => {
+  const handleUpdateUser = async (values) => {
+    if (!name) {
+      message.error("Candidate not provided");
+      return;
+    }
     var data = JSON.stringify({
       ...(editData && { id: Number(editData?.id) }),
       interview: values?.interview,
-      candidate: values?.candidate,
+      candidate: name?.value,
       client: values?.client,
       job: values?.job,
       start_date: dayjs(editData?.start_date).format("YYYY-MM-DD h:mm:ss"),
@@ -86,6 +99,35 @@ const RecruitmentInterviewsForm = ({
         message.error("Something Went Wrong!", "error");
         setLoading(false);
       });
+  };
+
+  const grabCV = (inputValue) => {
+    if (!inputValue) {
+      return [];
+    }
+    var config = {
+      method: "get",
+      url:
+        "https://proud-pea-coat-eel.cyclic.app/api/cv?name=" +
+        inputValue +
+        "&page=1",
+      headers: {
+        Authorization: token,
+      },
+    };
+    let res = axios(config)
+      .then(function (response) {
+        // console.log(JSON.stringify(response.data));
+        const out = response?.data?.data.map((res) => {
+          return { id: res.id, value: res.id, label: res.name };
+        });
+        return out;
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    return res;
   };
 
   return (
@@ -124,6 +166,7 @@ const RecruitmentInterviewsForm = ({
           }}
         >
           <Form.Item
+            className="grid-2-column"
             name="interview"
             label={"Interview"}
             rules={[
@@ -135,23 +178,19 @@ const RecruitmentInterviewsForm = ({
           >
             <Input placeholder={"Enter interview name"} />
           </Form.Item>
-          <Form.Item
-            name="candidate"
-            label={"Candidate"}
-            rules={[
-              {
-                required: true,
-                message: "No candidate provided",
-              },
-            ]}
-          >
-            <Select
-              placeholder={"Select the candidate"}
-              options={candidateList}
-              loading={candidateFetching}
-              disabled={candidateFetching}
+          <div className="flex-small-gap-column grid-2-column">
+            <div className="text-black small-text">
+              <span className="text-red">*</span> Candidate
+            </div>
+            <AsyncSelect
+              className="custom-selection-box"
+              loadOptions={grabCV}
+              isClearable
+              value={name}
+              onChange={(value) => setName(value)}
+              placeholder={"Select the candidate for interview"}
             />
-          </Form.Item>
+          </div>
           <Form.Item
             name="client"
             label={"Client"}
