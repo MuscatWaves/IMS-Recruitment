@@ -93,7 +93,7 @@ const Routing = () => {
                   element={<RecruitmentInterviews />}
                 ></Route>
                 <Route
-                  path="/recruitment/cvParsing"
+                  path="/recruitment/resumes"
                   element={<RecruitmentCVParsing />}
                 ></Route>
                 {/* Misc */}

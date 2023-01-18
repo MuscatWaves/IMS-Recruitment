@@ -2,6 +2,7 @@ import jobOpeningsImage from "../../../images/job_openings.png";
 import contactsImage from "../../../images/contacts.svg";
 import batchesImage from "../../../images/batch.svg";
 import interviewImage from "../../../images/interview.svg";
+import resumeImage from "../../../images/resumes.svg";
 
 export const cards = [
   {
@@ -30,9 +31,9 @@ export const cards = [
   },
   {
     id: 5,
-    icon: interviewImage,
-    title: "CV parsing",
-    path: "/recruitment/cvParsing",
+    icon: resumeImage,
+    title: "Resumes",
+    path: "/recruitment/resumes",
   },
 ];
 

@@ -45,7 +45,7 @@ const RecruitmentCVParsing = () => {
   const [isFilterModal, toggleFilterModal] = useState(false);
 
   useEffect(() => {
-    document.title = "Recruitment - CV Parsing";
+    document.title = "Recruitment - Resumes";
     refetch(filter);
     // eslint-disable-next-line
   }, []);
@@ -58,7 +58,7 @@ const RecruitmentCVParsing = () => {
     { id: 0, name: "Dashboard", url: "/recruitment/dashboard" },
     {
       id: 1,
-      name: "CV parsing",
+      name: "Resumes",
       active: true,
     },
   ];
@@ -349,7 +349,7 @@ const RecruitmentCVParsing = () => {
         animate="show"
       >
         <m.div className="title-text primary-color" variants={item}>
-          CV Parsing
+          Resumes
         </m.div>
         <m.div
           className="recruitment-filter-nav-header-without"

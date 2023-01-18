@@ -322,12 +322,14 @@ const RecruitmentInterviews = () => {
           <div>
             <div className="bolder text-black">Candidate</div>
             <div className="bold text-grey medium-text">
-              {editData?.candidate}
+              {editData?.candidateName}
             </div>
           </div>
           <div>
             <div className="bolder text-black">Client</div>
-            <div className="bold text-grey medium-text">{editData?.client}</div>
+            <div className="bold text-grey medium-text">
+              {editData?.clientName}
+            </div>
           </div>
           <div>
             <div className="bolder text-black">Status</div>
