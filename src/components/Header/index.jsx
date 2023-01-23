@@ -3,11 +3,12 @@ import ojimage from "../../images/oj-small.png";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import Authentication from "../../components/Authentication";
-import { FaHome, FaPowerOff } from "react-icons/fa";
+import { AiOutlinePoweroff } from "react-icons/ai";
+import { FiUser } from "react-icons/fi";
 import { removeCookie } from "../../utilities";
-import { m } from "framer-motion";
 import jwtDecode from "jwt-decode";
 import "./header.css";
+import { Button } from "antd";
 
 const Header = ({ home, logOut }) => {
   const navigate = useNavigate();
@@ -18,36 +19,56 @@ const Header = ({ home, logOut }) => {
   };
   const user = token && jwtDecode(token);
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
+  // const container = {
+  //   hidden: { opacity: 0 },
+  //   show: {
+  //     opacity: 1,
+  //     transition: {
+  //       staggerChildren: 0.1,
+  //     },
+  //   },
+  // };
 
-  const item = {
-    hidden: {
-      opacity: 0,
-      x: "120px",
-    },
-    show: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 40,
-        damping: 9,
-      },
-    },
-  };
+  // const item = {
+  //   hidden: {
+  //     opacity: 0,
+  //     x: "120px",
+  //   },
+  //   show: {
+  //     opacity: 1,
+  //     x: 0,
+  //     transition: {
+  //       type: "spring",
+  //       stiffness: 40,
+  //       damping: 9,
+  //     },
+  //   },
+  // };
 
   return (
     <div className="header">
       <Authentication />
-      <m.div
+      <img
+        src={ojimage}
+        className="header-image"
+        alt="Oman jobs"
+        onClick={() => navigateTo(home)}
+      />
+      <div className="flex-small-gap">
+        <FiUser className="large-text text-light-grey" />
+        <div className="text-light-grey bolder">{user ? user?.name : ""}</div>
+        <Button
+          className="header-log-out-btn"
+          type="primary"
+          danger
+          onClick={() => removeCookie(navigate, logOut)}
+          shape={"round"}
+          title={"Log Off"}
+        >
+          <AiOutlinePoweroff className="large-text" />
+        </Button>
+      </div>
+      {/* <m.div
         className="flex-gap"
         variants={container}
         animate="show"
@@ -65,21 +86,8 @@ const Header = ({ home, logOut }) => {
           >
             <FaPowerOff />
           </m.div>
-          <m.div
-            className="hdr-icon-button"
-            onClick={() => navigateTo(home)}
-            variants={item}
-          >
-            <FaHome />
-          </m.div>
         </div>
-      </m.div>
-      <img
-        src={ojimage}
-        className="header-image"
-        alt="Oman jobs"
-        onClick={() => navigateTo(home)}
-      />
+      </m.div> */}
     </div>
   );
 };

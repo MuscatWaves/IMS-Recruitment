@@ -5,14 +5,18 @@ import Cookies from "universal-cookie";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../ClientsDashBoard/constants";
 import { Button, Input, message, Modal, Pagination, Table } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import axios from "axios";
 import ClientJobForm from "./clientjobcreate";
 import "./clientjobopenings.css";
 import JdViewData from "./JdViewData";
+import { useQuery } from "react-query";
+import dayjs from "dayjs";
 
 const ClientJobOpenings = () => {
   const cookies = new Cookies();
+  var localizedFormat = require("dayjs/plugin/localizedFormat");
+  dayjs.extend(localizedFormat);
   const token = cookies.get("token");
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
@@ -51,6 +55,25 @@ const ClientJobOpenings = () => {
     getData(name, page);
   };
 
+  const { data: contactResult } = useQuery(
+    ["contactResult"],
+    () =>
+      axios.get("/api/recruitment/client/contact", {
+        headers: {
+          Authorization: token,
+        },
+      }),
+    {
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: item.name,
+          value: item.id,
+        }));
+        return newData;
+      },
+    }
+  );
+
   const getData = async (name, page) => {
     setLoading(true);
     setData([]);
@@ -86,6 +109,28 @@ const ClientJobOpenings = () => {
       render: (record) => <div className="text-grey">{record.designation}</div>,
     },
     {
+      title: "Contact",
+      render: (record) => (
+        <div className="text-grey">
+          {
+            contactResult?.filter((item) => item.value === record.contact)[0]
+              ?.label
+          }
+        </div>
+      ),
+    },
+    {
+      title: "Created By",
+      render: (record) => (
+        <div>
+          <div className="text-black">{record.createdBy}</div>
+          <div className="very-small-text">
+            {dayjs(record.createdAt).format("llll")}
+          </div>
+        </div>
+      ),
+    },
+    {
       title: "Status",
       render: (record) =>
         record.isActive ? (
@@ -104,8 +149,9 @@ const ClientJobOpenings = () => {
               setShowDetailsData(record);
               setShowDetailsModal(true);
             }}
+            ghost
           >
-            View Job Description
+            <div className="bold">View Job Description</div>
           </Button>
           <Button
             type="primary"
@@ -114,16 +160,6 @@ const ClientJobOpenings = () => {
             onClick={() => {
               setEditData(record);
               toggleModal(true);
-            }}
-          />
-          <Button
-            type="primary"
-            shape="round"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => {
-              setDeletionData(record);
-              toggleDeleteModal(true);
             }}
           />
         </div>
@@ -219,7 +255,6 @@ const ClientJobOpenings = () => {
             >
               <Input
                 placeholder="Search here!"
-                size="large"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -229,13 +264,12 @@ const ClientJobOpenings = () => {
             </form>
             <Button
               type="primary"
-              size="large"
               onClick={() => {
                 setEditData(null);
                 toggleModal(true);
               }}
             >
-              + Create
+              + Create Job
             </Button>
           </div>
         </m.div>

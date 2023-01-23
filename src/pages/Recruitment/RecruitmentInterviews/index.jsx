@@ -216,8 +216,9 @@ const RecruitmentInterviews = () => {
               toggleCommentModal(true);
               setEditData(record);
             }}
+            ghost
           >
-            View Comments
+            <div className="bold">View Comments</div>
           </Button>
           <Button
             type="primary"
@@ -383,7 +384,6 @@ const RecruitmentInterviews = () => {
               <Input
                 placeholder="Search"
                 prefix={<AiOutlineSearch className="large-text" />}
-                size="large"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -393,17 +393,15 @@ const RecruitmentInterviews = () => {
             </form>
             <Button
               type="primary"
-              size="large"
               onClick={() => {
                 toggleFilterModal(true);
               }}
               className={checkFilterActive(filter) && "filter-button--active"}
             >
-              <FaFilter className="medium-text" />
+              <FaFilter className="small-text" />
             </Button>
             <Button
               type="primary"
-              size="large"
               onClick={() => {
                 setEditData(null);
                 toggleModal(true);

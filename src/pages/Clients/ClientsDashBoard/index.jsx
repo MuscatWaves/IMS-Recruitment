@@ -5,8 +5,6 @@ import Cookies from "universal-cookie";
 import { AnimatePresence, m } from "framer-motion";
 import Header from "../../../components/Header";
 import { cards, container, item } from "./constants";
-import { Button } from "antd";
-import Footer from "../../../components/Footer";
 import "./DashBoard.css";
 
 const ClientDashBoard = () => {
@@ -16,6 +14,7 @@ const ClientDashBoard = () => {
   const navigateTo = (path) => {
     navigate(path);
   };
+  const user = token && jwtDecode(token);
 
   useEffect(() => {
     document.title = "Dashboard";
@@ -36,6 +35,10 @@ const ClientDashBoard = () => {
       transition={{ duration: 0.6 }}
     >
       <Header home={"/client/dashboard"} logOut={"/client"} />
+      <m.span className="welcome-message">
+        <h1 className="text-orange bold">Welcome</h1>
+        <h1 className="text-grey">{user?.name}!</h1>
+      </m.span>
       <AnimatePresence>
         <m.div
           className="cards-main"
@@ -43,27 +46,31 @@ const ClientDashBoard = () => {
           initial="hidden"
           animate="show"
         >
-          {cards.map((card) => (
-            <m.div className="cards-main__each" key={card.id} variants={item}>
-              <img
-                src={card.icon}
-                className="cards-main__each-image"
-                alt={card.title}
-              />
-              <Button
-                type="primary"
-                size="large"
-                block
-                onClick={() => navigateTo(card.path)}
-                disabled={card.disabled}
-              >
-                {card.title}
-              </Button>
-            </m.div>
-          ))}
+          {cards.map(
+            (card) =>
+              !card.disabled && (
+                <m.div
+                  className="cards-main__each"
+                  key={card.id}
+                  onClick={() => navigateTo(card.path)}
+                  variants={item}
+                >
+                  <div className="dash-card-icon">
+                    <card.icon style={{ fontSize: "40px" }} />
+                  </div>
+                  <div>
+                    <h2>{card.title}</h2>
+                    <p className="small-text">{card.description}</p>
+                  </div>
+                  <div className="go-corner" href="#">
+                    <div className="go-arrow">→</div>
+                  </div>
+                </m.div>
+              )
+          )}
         </m.div>
       </AnimatePresence>
-      <Footer />
+      {/* <Footer /> */}
     </m.div>
   );
 };

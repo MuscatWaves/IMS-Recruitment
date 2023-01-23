@@ -1,37 +1,40 @@
-import jobOpeningsImage from "../../../images/job_openings.png";
-import contactsImage from "../../../images/contacts.svg";
-import batchesImage from "../../../images/batch.svg";
-import interviewImage from "../../../images/interview.svg";
-import resumeImage from "../../../images/resumes.svg";
+import { MdWorkOutline } from "react-icons/md";
+import { RiContactsBookLine } from "react-icons/ri";
+import { BsPersonBadge } from "react-icons/bs";
+import { TbMessages } from "react-icons/tb";
 
 export const cards = [
   {
     id: 1,
-    icon: jobOpeningsImage,
+    icon: MdWorkOutline,
     title: "Job Openings",
     path: "/recruitment/jobs",
+    description: "Manage the job posting",
   },
   {
     id: 2,
-    icon: contactsImage,
+    icon: RiContactsBookLine,
     title: "Contacts",
     path: "/recruitment/contacts",
+    description: "Manage contact person information",
   },
   {
     id: 3,
-    icon: batchesImage,
+    icon: BsPersonBadge,
     title: "Clients",
     path: "/recruitment/clients",
+    description: "Manage client information",
   },
   {
     id: 4,
-    icon: interviewImage,
+    icon: TbMessages,
     title: "Interview",
     path: "/recruitment/interviews",
+    description: "Manage interview information",
   },
   {
     id: 5,
-    icon: resumeImage,
+    icon: MdWorkOutline,
     title: "Resumes",
     path: "/recruitment/resumes",
     disabled: true,

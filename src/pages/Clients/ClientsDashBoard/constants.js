@@ -1,25 +1,27 @@
-import jobOpeningsImage from "../../../images/job_openings.png";
-import contactsImage from "../../../images/contacts.svg";
-import batchesImage from "../../../images/batch.svg";
+import { MdWorkOutline } from "react-icons/md";
+import { RiContactsBookLine } from "react-icons/ri";
 
 export const cards = [
   {
     id: 1,
-    icon: jobOpeningsImage,
+    icon: MdWorkOutline,
     title: "Job Openings",
     path: "/client/jobs",
+    description: "Manage the job posting",
   },
   {
     id: 2,
-    icon: contactsImage,
+    icon: RiContactsBookLine,
     title: "Contacts",
     path: "/client/contacts",
+    description: "Manage the contact information",
   },
   {
     id: 3,
-    icon: batchesImage,
+    icon: RiContactsBookLine,
     title: "CV Batches",
     path: "/uploadcv",
+    description: "Manage the CV Batches",
     disabled: true,
   },
 ];

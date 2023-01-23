@@ -191,8 +191,9 @@ const RecruitmentJobOpenings = () => {
               setShowDetailsData(record);
               setShowDetailsModal(true);
             }}
+            ghost
           >
-            View Job Description
+            <div className="bold">View Job Description</div>
           </Button>
           <Button
             type="primary"
@@ -323,7 +324,6 @@ const RecruitmentJobOpenings = () => {
               <Input
                 placeholder="Search here!"
                 prefix={<AiOutlineSearch className="large-text" />}
-                size="large"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -333,17 +333,15 @@ const RecruitmentJobOpenings = () => {
             </form>
             <Button
               type="primary"
-              size="large"
               onClick={() => {
                 toggleFilterModal(true);
               }}
               className={checkFilterActive(filter) && "filter-button--active"}
             >
-              <FaFilter className="medium-text" />
+              <FaFilter className="small-text" />
             </Button>
             <Button
               type="primary"
-              size="large"
               onClick={() => {
                 setEditData(null);
                 toggleModal(true);

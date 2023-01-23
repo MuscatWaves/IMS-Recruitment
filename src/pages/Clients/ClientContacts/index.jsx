@@ -126,8 +126,9 @@ const ClientContacts = () => {
               setShowDetailsData(record);
               setShowDetailsModal(true);
             }}
+            ghost
           >
-            View Profile
+            <div className="bold">View Profile</div>
           </Button>
           <Button
             type="primary"
@@ -311,13 +312,12 @@ const ClientContacts = () => {
             </form>
             <Button
               type="primary"
-              size="large"
               onClick={() => {
                 setEditData(null);
                 toggleModal(true);
               }}
             >
-              + Create
+              + Create Contact
             </Button>
           </div>
         </m.div>
