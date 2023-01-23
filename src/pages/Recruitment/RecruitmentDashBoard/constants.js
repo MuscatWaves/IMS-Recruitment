@@ -34,6 +34,7 @@ export const cards = [
     icon: resumeImage,
     title: "Resumes",
     path: "/recruitment/resumes",
+    disabled: true,
   },
 ];
 

@@ -19,10 +19,10 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { useQuery } from "react-query";
 import { checkFilterActive, string } from "../../../utilities";
-import "./recruitmentinterviews.css";
 import { FaFilter } from "react-icons/fa";
 import { AiOutlineSearch } from "react-icons/ai";
 import RecruitmentInterviewFilter from "./recruitmentInterviewFilter";
+import "./recruitmentinterviews.css";
 
 const RecruitmentInterviews = () => {
   const cookies = new Cookies();
