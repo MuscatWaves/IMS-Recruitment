@@ -7,21 +7,25 @@ import { container, item } from "../RecruitmentDashBoard/constants";
 import { Button, Input, message, Modal, Pagination, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import RecruitmentJobForm from "./recruitmentjobcreate";
-import JdViewData from "./JdViewData";
-import { AiOutlineSearch } from "react-icons/ai";
-import { FaFilter } from "react-icons/fa";
-import { checkFilterActive } from "../../../utilities";
+import userImage from "../../../images/user-no-image.png";
+import {
+  FaAddressBook,
+  FaFax,
+  FaFilter,
+  FaPhoneAlt,
+  FaSkype,
+  FaTwitter,
+} from "react-icons/fa";
+import { AiFillMail, AiOutlineSearch } from "react-icons/ai";
 import { useQuery } from "react-query";
-import RecruitmentJobOpeningFilter from "./recruitmentJobOpeningFilter";
-import jwtDecode from "jwt-decode";
-import dayjs from "dayjs";
-import "./recruitmentjobopenings.css";
+import { checkFilterActive } from "../../../utilities";
+import RecruitmentClientInformationForm from "./recruitmentclientinformationcreate";
+import RecruitmentClientInformationFilter from "./recruitmentClientInformationFilter";
+import "./recruitmentcontacts.css";
 
-const RecruitmentJobOpenings = () => {
+const RecruitmentClientInformation = () => {
   const cookies = new Cookies();
   const token = cookies.get("token");
-  const user = jwtDecode(token);
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
@@ -34,20 +38,17 @@ const RecruitmentJobOpenings = () => {
   const [deletionData, setDeletionData] = useState(null);
   const [deleteModal, toggleDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  var localizedFormat = require("dayjs/plugin/localizedFormat");
-  dayjs.extend(localizedFormat);
   const [filter, setFilter] = useState({
-    designation: "",
-    gender: "",
-    nationality: "",
-    client: "",
-    contact: "",
     search: "",
+    candidate: "",
+    client: "",
+    job: "",
+    interview: "",
   });
   const [isFilterModal, toggleFilterModal] = useState(false);
 
   useEffect(() => {
-    document.title = "Recruitment - Job Openings";
+    document.title = "Recruitment - Client Information";
     refetch(filter);
     // eslint-disable-next-line
   }, []);
@@ -56,27 +57,22 @@ const RecruitmentJobOpenings = () => {
     getData(values, page);
   };
 
-  // const { data: contactResult } = useQuery(
-  //   ["contactResult"],
-  //   () =>
-  //     axios.get("/api/recruitment/contact", {
-  //       headers: {
-  //         Authorization: token,
-  //       },
-  //     }),
-  //   {
-  //     select: (data) => {
-  //       const newData = data.data.data.map((item) => ({
-  //         label: item.name,
-  //         value: item.id,
-  //       }));
-  //       return newData;
-  //     },
-  //   }
-  // );
+  const navigation = [
+    { id: 0, name: "Dashboard", url: "/recruitment/dashboard" },
+    {
+      id: 1,
+      name: "Client Information",
+      active: true,
+    },
+  ];
 
-  const { data: clientResult } = useQuery(
-    ["clientResult"],
+  const onChange = (page) => {
+    setPage(page);
+    getData(filter, page);
+  };
+
+  const { data: clientsList } = useQuery(
+    ["clients"],
     () =>
       axios.get("/api/client", {
         headers: {
@@ -84,7 +80,7 @@ const RecruitmentJobOpenings = () => {
         },
       }),
     {
-      enabled: user.isHead,
+      refetchOnWindowFocus: false,
       select: (data) => {
         const newData = data.data.data.map((item) => ({
           label: item.name,
@@ -94,20 +90,6 @@ const RecruitmentJobOpenings = () => {
       },
     }
   );
-
-  const navigation = [
-    { id: 0, name: "Dashboard", url: "/recruitment/dashboard" },
-    {
-      id: 1,
-      name: "Job Openings",
-      active: true,
-    },
-  ];
-
-  const onChange = (page) => {
-    setPage(page);
-    getData(filter, page);
-  };
 
   const getData = async (values, page) => {
     setLoading(true);
@@ -119,7 +101,7 @@ const RecruitmentJobOpenings = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/recruitment/job?designation=${values.designation}&gender=${values.gender}&nationality=${values.nationality}&client=${values.client}&contact=${values.contact}&search=${values.search}&page=${page}`,
+        `/api/cd?search=${values.search}&candidate=${values.candidate}&client=${values.client}&job=${values.job}&interview=${values.interview}`,
         config
       );
       if (Data.status === 200) {
@@ -133,69 +115,51 @@ const RecruitmentJobOpenings = () => {
         } else {
           message.error("Ouch, Something Went Terribly Wrong!");
           setLoading(false);
-          setData([]);
         }
       }
     } catch (err) {
       console.log(err);
-      setData([]);
       setLoading(false);
     }
   };
 
   const columns = [
     {
-      title: "Job Title",
-      render: (record) => <div className="text-grey">{record.designation}</div>,
-    },
-    {
       title: "Company Name",
       render: (record) => (
-        <div className="text-grey">{record.clientDetail_clientName}</div>
+        <div>
+          <div className="text-black bold">{record.clientName}</div>
+          <div className="very-small-text text-grey bold">
+            {record.clientEmail}
+          </div>
+        </div>
       ),
     },
     {
-      title: "Website",
+      title: "Contact No",
+      render: (record) => <div className="text-grey">{record.number}</div>,
+    },
+    {
+      title: "Job",
       render: (record) => (
-        <div className="text-grey">{record.clientDetail_website}</div>
+        <div>
+          <div className="text-black bold">{record.jobtitle}</div>
+          <div className="very-small-text text-grey bold">
+            {record.department}
+          </div>
+        </div>
       ),
     },
     {
-      title: "Created At",
-      render: (record) => (
-        <div className="text-grey">{dayjs(record.createdAt).format("ll")}</div>
-      ),
-    },
-    user?.isHead && {
       title: "Client",
       render: (record) => (
         <div className="text-grey">
           {
-            clientResult?.filter((item) => item.value === record.client)[0]
+            clientsList?.filter((item) => item.value === record.client)[0]
               ?.label
           }
         </div>
       ),
-    },
-    // {
-    //   title: "Contact",
-    //   render: (record) => (
-    //     <div className="text-grey">
-    //       {
-    //         contactResult?.filter((item) => item.value === record.contact)[0]
-    //           ?.label
-    //       }
-    //     </div>
-    //   ),
-    // },
-    {
-      title: "Status",
-      render: (record) =>
-        record.isActive ? (
-          <div className="text-green">Active</div>
-        ) : (
-          <div className="text-red">Inactive</div>
-        ),
     },
     {
       title: "Actions",
@@ -209,42 +173,38 @@ const RecruitmentJobOpenings = () => {
             }}
             ghost
           >
-            <div className="bold">View Job Description</div>
+            <div className="bold">View Profile</div>
           </Button>
-          {user?.isHead && (
-            <>
-              <Button
-                type="primary"
-                shape="round"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setEditData(record);
-                  toggleModal(true);
-                }}
-              />
-              <Button
-                type="primary"
-                shape="round"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => {
-                  setDeletionData(record);
-                  toggleDeleteModal(true);
-                }}
-              />
-            </>
-          )}
+          <Button
+            type="primary"
+            shape="round"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditData(record);
+              toggleModal(true);
+            }}
+          />
+          <Button
+            type="primary"
+            shape="round"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => {
+              setDeletionData(record);
+              toggleDeleteModal(true);
+            }}
+          />
         </div>
       ),
       width: "300px",
     },
-  ].filter((v) => v);
+  ];
 
   const deleteData = async () => {
     setDeleteLoading(true);
     await axios({
       method: "delete",
-      url: `/api/recruitment/job/${deletionData.id}`,
+      url: `/api/recruitment/contact/${deletionData.id}`,
       headers: {
         Accept: "application/json",
         "Content-Type": "multipart/form-data",
@@ -261,6 +221,7 @@ const RecruitmentJobOpenings = () => {
       .catch(function (response) {
         message.error("Something Went Wrong!", "error");
         setDeleteLoading(false);
+        setData([]);
       });
   };
 
@@ -278,25 +239,15 @@ const RecruitmentJobOpenings = () => {
       transition={{ duration: 0.6 }}
     >
       {isModalOpen && (
-        <RecruitmentJobForm
+        <RecruitmentClientInformationForm
           isModalOpen={isModalOpen}
           setModal={toggleModal}
           editData={editData}
           setEditData={setEditData}
           getData={refetch}
           filterValues={filter}
-          // contactResult={contactResult}
         />
       )}
-      {showDetailsModal && (
-        <JdViewData
-          open={showDetailsModal}
-          setOpen={setShowDetailsModal}
-          data={showDetailsData}
-          setData={setShowDetailsData}
-        />
-      )}
-
       <Modal
         title="Delete Confirmation"
         open={deleteModal}
@@ -306,7 +257,75 @@ const RecruitmentJobOpenings = () => {
         okType={"danger"}
         confirmLoading={deleteLoading}
       >
-        <p>{`Are you sure you want to delete "${deletionData?.designation}" from job data?`}</p>
+        <p>{`Are you sure you want to delete "${deletionData?.name}" from contact data?`}</p>
+      </Modal>
+      <Modal
+        title="Contact Information"
+        open={showDetailsModal}
+        footer={false}
+        onCancel={() => {
+          setShowDetailsModal(false);
+          setShowDetailsData({});
+        }}
+        centered
+      >
+        <div className="client-contact-card">
+          <div className="client-contact-card--first">
+            <div>
+              <div className="large-text bold">{showDetailsData.name}</div>
+              <div className="medium-text text-grey">
+                {showDetailsData.jobtitle}
+              </div>
+              <div className="text-light-grey small-text">
+                {showDetailsData.description}
+              </div>
+            </div>
+            <div>
+              <div className="flex-small-gap primary-color">
+                <FaPhoneAlt className="text-grey" />
+                <div>{showDetailsData.number}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <AiFillMail className="text-grey" />
+                <div>{showDetailsData.email}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaFax className="text-grey" />
+                <div>{showDetailsData.fax}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaSkype className="text-grey" />
+                <div>{showDetailsData.skype}</div>
+              </div>
+              <div className="flex-small-gap primary-color">
+                <FaAddressBook className="text-grey" />
+                <div>
+                  {`${showDetailsData.street} ${showDetailsData.city} ${showDetailsData.state} ${showDetailsData.country}`}
+                  <span>
+                    {showDetailsData.code && `-${showDetailsData.code}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="client-contact-card--second">
+            <img src={userImage} width={150} height={150} alt={"user"} />
+            <div className="flex-small-gap">
+              <AiFillMail
+                className="pointer"
+                style={{ fontSize: "20px", color: "#c71610" }}
+              />
+              <></>
+              <FaTwitter
+                className="pointer"
+                style={{ fontSize: "20px", color: "#1DA1F2" }}
+                onClick={() =>
+                  showDetailsData.skype && window.open("https://www.google.com")
+                }
+              />
+            </div>
+          </div>
+        </div>
       </Modal>
       <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
       <m.div
@@ -316,7 +335,7 @@ const RecruitmentJobOpenings = () => {
         animate="show"
       >
         <m.div className="title-text primary-color" variants={item}>
-          Job Openings
+          Client Information
         </m.div>
         <m.div
           className="recruitment-filter-nav-header-without"
@@ -332,17 +351,17 @@ const RecruitmentJobOpenings = () => {
                   search: name,
                 });
                 refetch({
-                  designation: filter?.designation || "",
-                  gender: filter?.gender || "",
-                  nationality: filter?.nationality || "",
-                  client: filter?.client || "",
-                  contact: filter?.contact || "",
                   search: name,
+                  name: filter?.name || "",
+                  email: filter?.email || "",
+                  department: filter?.department || "",
+                  client: filter?.client || "",
+                  jobtitle: filter?.jobtitle || "",
                 });
               }}
             >
               <Input
-                placeholder="Search here!"
+                placeholder="Search"
                 prefix={<AiOutlineSearch className="large-text" />}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -360,30 +379,27 @@ const RecruitmentJobOpenings = () => {
             >
               <FaFilter className="small-text" />
             </Button>
-            {user?.isHead && (
-              <Button
-                type="primary"
-                onClick={() => {
-                  setEditData(null);
-                  toggleModal(true);
-                }}
-              >
-                + Create
-              </Button>
-            )}
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditData(null);
+                toggleModal(true);
+              }}
+            >
+              + Create
+            </Button>
           </div>
         </m.div>
         <AnimatePresence>
           {isFilterModal && (
-            <RecruitmentJobOpeningFilter
+            <RecruitmentClientInformationFilter
               isFilterModal={isFilterModal}
               toggleFilterModal={toggleFilterModal}
               filterData={filter}
               setFilterData={setFilter}
               getData={refetch}
               loading={isLoading}
-              clientResult={clientResult}
-              user={user}
+              clientsList={clientsList}
             />
           )}
         </AnimatePresence>
@@ -412,4 +428,4 @@ const RecruitmentJobOpenings = () => {
   );
 };
 
-export default RecruitmentJobOpenings;
+export default RecruitmentClientInformation;

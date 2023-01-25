@@ -177,18 +177,6 @@ const RecruitmentJobForm = ({
             <Switch />
           </Form.Item>
           <Form.Item
-            name="designation"
-            label={"Designation"}
-            rules={[
-              {
-                required: true,
-                message: "No Designation provided",
-              },
-            ]}
-          >
-            <Input placeholder={"Enter designation for the job"} />
-          </Form.Item>
-          <Form.Item
             name="vacancies"
             label={"Vacancies"}
             rules={[
@@ -202,6 +190,19 @@ const RecruitmentJobForm = ({
               placeholder={"Enter no of vacancies for the job"}
               style={{ width: "100%" }}
             />
+          </Form.Item>
+          <Form.Item
+            className="grid-2-column"
+            name="designation"
+            label={"Designation"}
+            rules={[
+              {
+                required: true,
+                message: "No Designation provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter designation for the job"} />
           </Form.Item>
           <Form.Item
             className="grid-2-column"

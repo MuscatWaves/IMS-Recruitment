@@ -11,7 +11,7 @@ import {
 } from "antd";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { useQuery } from "react-query";
+// import { useQuery } from "react-query";
 
 const ClientJobForm = ({
   isModalOpen,
@@ -31,24 +31,24 @@ const ClientJobForm = ({
     setEditData(null);
   };
 
-  const { data: contactResult } = useQuery(
-    ["contactResult"],
-    () =>
-      axios.get("/api/recruitment/client/contact?page=0", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.name,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
+  // const { data: contactResult } = useQuery(
+  //   ["contactResult"],
+  //   () =>
+  //     axios.get("/api/recruitment/client/contact?page=0", {
+  //       headers: {
+  //         Authorization: token,
+  //       },
+  //     }),
+  //   {
+  //     select: (data) => {
+  //       const newData = data.data.data.map((item) => ({
+  //         label: item.name,
+  //         value: item.id,
+  //       }));
+  //       return newData;
+  //     },
+  //   }
+  // );
 
   const handleUpdateUser = async (values) => {
     var data = JSON.stringify({
@@ -172,7 +172,7 @@ const ClientJobForm = ({
             otherBenefits: editData?.otherBenefits || "",
           }}
         >
-          <Form.Item
+          {/* <Form.Item
             name="contact"
             label={"Contact"}
             rules={[
@@ -187,25 +187,13 @@ const ClientJobForm = ({
               options={contactResult}
               allowClear
             />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             name={"isActive"}
             label={"Job Status"}
             valuePropName={"checked"}
           >
             <Switch />
-          </Form.Item>
-          <Form.Item
-            name="designation"
-            label={"Designation"}
-            rules={[
-              {
-                required: true,
-                message: "No Designation provided",
-              },
-            ]}
-          >
-            <Input placeholder={"Enter designation for the job"} />
           </Form.Item>
           <Form.Item
             name="vacancies"
@@ -221,6 +209,19 @@ const ClientJobForm = ({
               placeholder={"Enter no of vacancies for the job"}
               style={{ width: "100%" }}
             />
+          </Form.Item>
+          <Form.Item
+            className="grid-2-column"
+            name="designation"
+            label={"Designation"}
+            rules={[
+              {
+                required: true,
+                message: "No Designation provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter designation for the job"} />
           </Form.Item>
           <Form.Item
             className="grid-2-column"

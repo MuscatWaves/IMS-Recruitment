@@ -21,13 +21,21 @@ export const cards = (user) => [
   {
     id: 3,
     icon: BsPersonBadge,
-    title: "Clients",
+    title: "Client Credentials",
     path: "/recruitment/clients",
-    description: "Manage client information",
+    description: "Manage client login data",
     disabled: !user.isHead,
   },
   {
     id: 4,
+    icon: BsPersonBadge,
+    title: "Client Information",
+    path: "/recruitment/clientInformation",
+    description: "Manage client information",
+    disabled: !user.isHead,
+  },
+  {
+    id: 5,
     icon: TbMessages,
     title: "Interview",
     path: "/recruitment/interviews",
@@ -35,7 +43,7 @@ export const cards = (user) => [
     disabled: !user.isHead,
   },
   {
-    id: 5,
+    id: 6,
     icon: MdWorkOutline,
     title: "Resumes",
     path: "/recruitment/resumes",

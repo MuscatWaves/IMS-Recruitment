@@ -6,6 +6,7 @@ import { AnimatePresence, m } from "framer-motion";
 import Header from "../../../components/Header";
 import { cards, container, item } from "./constants";
 import { Tour } from "antd";
+import ojimage from "../../../images/oj-small.png";
 import "./DashBoard.css";
 
 const ClientDashBoard = () => {
@@ -17,31 +18,24 @@ const ClientDashBoard = () => {
     navigate(path);
   };
   const user = token && jwtDecode(token);
-  const ref1 = useRef(null);
-  const ref2 = useRef(null);
-  const ref3 = useRef(null);
+  const uploadFileTabRef = useRef(null);
+  const cvBatchTabRef = useRef(null);
 
   const steps = [
     {
-      title: "Upload File",
-      description: "Put your files here.",
+      title: "Welcome to Muscat Waves Client Portal",
+      description:
+        "This is the portal you would be using for posting the jobs & viewing your CV Batches.",
       cover: (
-        <img
-          alt="tour.png"
-          src="https://user-images.githubusercontent.com/5378891/197385811-55df8480-7ff4-44bd-9d43-a7dade598d70.png"
-        />
+        <img alt="tour.png" src={ojimage} width={"100px"} height={"500px"} />
       ),
-      target: () => ref1.current,
     },
     {
-      title: "Save",
-      description: "Save your changes.",
-      target: () => ref2.current,
-    },
-    {
-      title: "Other Actions",
-      description: "Click to see other actions.",
-      target: () => ref3.current,
+      title: "Job Openings",
+      description:
+        "This tab is used for creating & viewing your job posting, Here you can create the Job Description which will help our Recruiters to find you the best possible candidate fit for the job.",
+      target: () => uploadFileTabRef.current,
+      // target: () => cvBatchTabRef.current,
     },
   ];
 
@@ -76,7 +70,7 @@ const ClientDashBoard = () => {
           initial="hidden"
           animate="show"
         >
-          {cards([ref1, ref2]).map(
+          {cards([uploadFileTabRef, cvBatchTabRef]).map(
             (card) =>
               !card.disabled && (
                 <m.div
