@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Button, Form, Drawer, Input, message } from "antd";
+import { Button, Form, Drawer, Input, message, Select } from "antd";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import TextArea from "antd/es/input/TextArea";
 
 const RecruitmentClientInformationForm = ({
   isModalOpen,
@@ -10,6 +11,7 @@ const RecruitmentClientInformationForm = ({
   setEditData,
   getData,
   filterValues,
+  clientsList,
 }) => {
   const [form] = Form.useForm();
   const [isLoading, setLoading] = useState(false);
@@ -24,25 +26,20 @@ const RecruitmentClientInformationForm = ({
   const handleUpdateUser = async (values, status = editData?.status) => {
     var data = JSON.stringify({
       ...(editData && { id: Number(editData?.id) }),
-      name: values?.name,
-      email: values?.email,
-      department: values?.department,
-      number: values?.number,
-      fax: values?.fax,
-      skype: values?.skype,
-      twitter: values?.twitter,
-      jobtitle: values?.jobtitle,
-      description: values?.description,
-      street: values?.street,
-      city: values?.city,
-      state: values?.state,
-      code: values?.code,
-      country: values?.country,
+      client: values?.client || null,
+      clientName: values?.clientName || "",
+      crNumber: values?.crNumber || "",
+      companyAddress: values?.companyAddress || "",
+      clientEmail: values?.clientEmail || "",
+      mobile: values?.mobile || "",
+      landline: values?.landline || "",
+      address: values?.address || "",
+      website: values?.website || "",
     });
     setLoading(true);
     var config = {
       method: editData ? "put" : "post",
-      url: "/api/recruitment/contact",
+      url: "/api/cd",
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -65,7 +62,7 @@ const RecruitmentClientInformationForm = ({
 
   return (
     <Drawer
-      title={editData ? "Update Contact" : "Create Contact"}
+      title={editData ? "Update Client Info" : "Create Client Info"}
       placement="right"
       size="large"
       onClose={onClose}
@@ -79,36 +76,59 @@ const RecruitmentClientInformationForm = ({
           form={form}
           scrollToFirstError={true}
           initialValues={{
-            name: editData?.name || "",
-            email: editData?.email || "",
-            department: editData?.department || "",
-            number: editData?.number || "",
-            fax: editData?.fax || "",
-            skype: editData?.skype || "",
-            twitter: editData?.twitter || "",
-            jobtitle: editData?.jobtitle || "",
-            description: editData?.description || "",
-            street: editData?.street || "",
-            city: editData?.city || "",
-            state: editData?.state || "",
-            code: editData?.code || "",
-            country: editData?.country || "",
+            client: editData?.client || null,
+            clientName: editData?.clientName || "",
+            crNumber: editData?.crNumber || "",
+            companyAddress: editData?.companyAddress || "",
+            clientEmail: editData?.clientEmail || "",
+            mobile: editData?.mobile || "",
+            landline: editData?.landline || "",
+            address: editData?.address || "",
+            website: editData?.website || "",
           }}
         >
           <Form.Item
-            name="name"
-            label={"Name"}
+            name="client"
+            className="grid-2-column"
+            label={"Client"}
             rules={[
               {
                 required: true,
-                message: "No Username provided",
+                message: "No Client provided",
               },
             ]}
           >
-            <Input placeholder={"Enter name of the user"} />
+            <Select
+              options={clientsList}
+              placeholder={"Enter name of the user"}
+            />
           </Form.Item>
           <Form.Item
-            name="email"
+            name="clientName"
+            label={"Company Name"}
+            rules={[
+              {
+                required: true,
+                message: "No Company Name provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter company name"} />
+          </Form.Item>
+          <Form.Item
+            name="crNumber"
+            label={"CR Number"}
+            rules={[
+              {
+                required: true,
+                message: "No CR Number provided",
+              },
+            ]}
+          >
+            <Input placeholder={"Enter CR no"} />
+          </Form.Item>
+          <Form.Item
+            name="clientEmail"
             label={"Email"}
             rules={[
               {
@@ -117,70 +137,23 @@ const RecruitmentClientInformationForm = ({
               },
             ]}
           >
-            <Input placeholder={"Enter email of the user"} />
+            <Input placeholder={"Enter email"} />
+          </Form.Item>
+          <Form.Item name="mobile" label={"Mobile no"}>
+            <Input placeholder={"Enter mobile number"} />
+          </Form.Item>
+          <Form.Item name="landline" label={"Landline"}>
+            <Input placeholder={"Enter landline number"} />
+          </Form.Item>
+          <Form.Item name="website" label={"Website"}>
+            <Input placeholder={"Enter website address"} />
           </Form.Item>
           <Form.Item
-            name="department"
-            label={"Department"}
-            rules={[
-              {
-                required: true,
-                message: "No Department provided",
-              },
-            ]}
+            className="grid-2-column"
+            name="companyAddress"
+            label={"Company Address"}
           >
-            <Input placeholder={"Enter department of the user"} />
-          </Form.Item>
-          <Form.Item
-            name="number"
-            label={"Phone Number"}
-            rules={[
-              {
-                required: true,
-                message: "No Phone No provided",
-              },
-            ]}
-          >
-            <Input placeholder={"Enter phone number of the user"} />
-          </Form.Item>
-          <Form.Item name="fax" label={"Fax No"}>
-            <Input placeholder={"Enter fax number of the user"} />
-          </Form.Item>
-          <Form.Item name="skype" label={"Skype Id"}>
-            <Input placeholder={"Enter skype id of the user"} />
-          </Form.Item>
-          <Form.Item name="twitter" label={"Twitter Profile Link"}>
-            <Input placeholder={"Enter profile link to twitter of the user"} />
-          </Form.Item>
-          <Form.Item
-            name="jobtitle"
-            label={"Job Title"}
-            rules={[
-              {
-                required: true,
-                message: "Job Title Not provided",
-              },
-            ]}
-          >
-            <Input placeholder={"Enter job title of the user"} />
-          </Form.Item>
-          <Form.Item name="description" label={"Description"}>
-            <Input placeholder={"Enter description of the user"} />
-          </Form.Item>
-          <Form.Item name="street" label={"Street"}>
-            <Input placeholder={"Enter street within address"} />
-          </Form.Item>
-          <Form.Item name="city" label={"City"}>
-            <Input placeholder={"Enter city within address"} />
-          </Form.Item>
-          <Form.Item name="state" label={"State"}>
-            <Input placeholder={"Enter state within address"} />
-          </Form.Item>
-          <Form.Item name="code" label={"Pin Code"}>
-            <Input placeholder={"Enter pin code within address"} />
-          </Form.Item>
-          <Form.Item name="country" label={"Country"}>
-            <Input placeholder={"Enter country within address"} />
+            <TextArea placeholder={"Enter Company Address"} />
           </Form.Item>
           <div
             className="flex-at-end medium-margin-top"
@@ -195,7 +168,7 @@ const RecruitmentClientInformationForm = ({
               htmlType="submit"
               loading={isLoading}
             >
-              {editData ? "Update Contact" : "Create Contact"}
+              {editData ? "Update Client Info" : "Create Client Info"}
             </Button>
           </div>
         </Form>

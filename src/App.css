@@ -189,6 +189,15 @@ body {
 
 /* Misc */
 
+.link {
+  transition: 0.3s;
+}
+
+.link:hover {
+  transform: scale(1.05);
+  color: #f07d00;
+}
+
 .hidden {
   display: none;
 }

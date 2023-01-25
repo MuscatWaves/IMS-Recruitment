@@ -157,7 +157,12 @@ const RecruitmentJobOpenings = () => {
     {
       title: "Website",
       render: (record) => (
-        <div className="text-grey">{record.clientDetail_website}</div>
+        <div
+          className="text-grey link pointer"
+          onClick={() => window.open(record.clientDetail_website)}
+        >
+          {record.clientDetail_website}
+        </div>
       ),
     },
     {

@@ -7,18 +7,9 @@ import { container, item } from "../RecruitmentDashBoard/constants";
 import { Button, Input, message, Modal, Pagination, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import userImage from "../../../images/user-no-image.png";
-import {
-  FaAddressBook,
-  FaFax,
-  FaFilter,
-  FaPhoneAlt,
-  FaSkype,
-  FaTwitter,
-} from "react-icons/fa";
-import { AiFillMail, AiOutlineSearch } from "react-icons/ai";
+import { FaFilter } from "react-icons/fa";
+import { AiOutlineSearch } from "react-icons/ai";
 import { useQuery } from "react-query";
-import { checkFilterActive } from "../../../utilities";
 import RecruitmentClientInformationForm from "./recruitmentclientinformationcreate";
 import RecruitmentClientInformationFilter from "./recruitmentClientInformationFilter";
 import "./recruitmentcontacts.css";
@@ -137,16 +128,16 @@ const RecruitmentClientInformation = () => {
     },
     {
       title: "Contact No",
-      render: (record) => <div className="text-grey">{record.number}</div>,
+      render: (record) => <div className="text-grey">{record.mobile}</div>,
     },
     {
-      title: "Job",
+      title: "Website",
       render: (record) => (
-        <div>
-          <div className="text-black bold">{record.jobtitle}</div>
-          <div className="very-small-text text-grey bold">
-            {record.department}
-          </div>
+        <div
+          className="text-grey link pointer"
+          onClick={() => window.open(record.website)}
+        >
+          {record.website}
         </div>
       ),
     },
@@ -246,6 +237,7 @@ const RecruitmentClientInformation = () => {
           setEditData={setEditData}
           getData={refetch}
           filterValues={filter}
+          clientsList={clientsList}
         />
       )}
       <Modal
@@ -260,7 +252,7 @@ const RecruitmentClientInformation = () => {
         <p>{`Are you sure you want to delete "${deletionData?.name}" from contact data?`}</p>
       </Modal>
       <Modal
-        title="Contact Information"
+        title="Client Information"
         open={showDetailsModal}
         footer={false}
         onCancel={() => {
@@ -269,63 +261,7 @@ const RecruitmentClientInformation = () => {
         }}
         centered
       >
-        <div className="client-contact-card">
-          <div className="client-contact-card--first">
-            <div>
-              <div className="large-text bold">{showDetailsData.name}</div>
-              <div className="medium-text text-grey">
-                {showDetailsData.jobtitle}
-              </div>
-              <div className="text-light-grey small-text">
-                {showDetailsData.description}
-              </div>
-            </div>
-            <div>
-              <div className="flex-small-gap primary-color">
-                <FaPhoneAlt className="text-grey" />
-                <div>{showDetailsData.number}</div>
-              </div>
-              <div className="flex-small-gap primary-color">
-                <AiFillMail className="text-grey" />
-                <div>{showDetailsData.email}</div>
-              </div>
-              <div className="flex-small-gap primary-color">
-                <FaFax className="text-grey" />
-                <div>{showDetailsData.fax}</div>
-              </div>
-              <div className="flex-small-gap primary-color">
-                <FaSkype className="text-grey" />
-                <div>{showDetailsData.skype}</div>
-              </div>
-              <div className="flex-small-gap primary-color">
-                <FaAddressBook className="text-grey" />
-                <div>
-                  {`${showDetailsData.street} ${showDetailsData.city} ${showDetailsData.state} ${showDetailsData.country}`}
-                  <span>
-                    {showDetailsData.code && `-${showDetailsData.code}`}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="client-contact-card--second">
-            <img src={userImage} width={150} height={150} alt={"user"} />
-            <div className="flex-small-gap">
-              <AiFillMail
-                className="pointer"
-                style={{ fontSize: "20px", color: "#c71610" }}
-              />
-              <></>
-              <FaTwitter
-                className="pointer"
-                style={{ fontSize: "20px", color: "#1DA1F2" }}
-                onClick={() =>
-                  showDetailsData.skype && window.open("https://www.google.com")
-                }
-              />
-            </div>
-          </div>
-        </div>
+        <div>{showDetailsData?.clientName}</div>
       </Modal>
       <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
       <m.div
@@ -344,6 +280,7 @@ const RecruitmentClientInformation = () => {
           <BreadCrumb items={navigation} />
           <div className="flex-small-gap">
             <form
+              className="hidden"
               onSubmit={(e) => {
                 e.preventDefault();
                 setFilter({
@@ -371,11 +308,12 @@ const RecruitmentClientInformation = () => {
               </Button>
             </form>
             <Button
+              className="hidden"
               type="primary"
               onClick={() => {
                 toggleFilterModal(true);
               }}
-              className={checkFilterActive(filter) && "filter-button--active"}
+              // className={checkFilterActive(filter) && "filter-button--active"}
             >
               <FaFilter className="small-text" />
             </Button>
