@@ -1,27 +1,30 @@
 import { MdWorkOutline } from "react-icons/md";
 import { RiContactsBookLine } from "react-icons/ri";
 
-export const cards = [
+export const cards = (ref) => [
   {
     id: 1,
     icon: MdWorkOutline,
     title: "Job Openings",
     path: "/client/jobs",
     description: "Manage the job posting",
+    ref: ref[0],
   },
-  {
-    id: 2,
-    icon: RiContactsBookLine,
-    title: "Contacts",
-    path: "/client/contacts",
-    description: "Manage the contact information",
-  },
+  // {
+  //   id: 2,
+  //   icon: RiContactsBookLine,
+  //   title: "Contacts",
+  //   path: "/client/contacts",
+  //   description: "Manage the contact information",
+  //   disabled: true,
+  // },
   {
     id: 3,
     icon: RiContactsBookLine,
     title: "CV Batches",
     path: "/uploadcv",
     description: "Manage the CV Batches",
+    ref: ref[1],
     disabled: true,
   },
 ];

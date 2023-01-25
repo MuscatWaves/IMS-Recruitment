@@ -46,7 +46,7 @@ const RecruitmentDashBoard = () => {
           initial="hidden"
           animate="show"
         >
-          {cards.map(
+          {cards(user).map(
             (card) =>
               !card.disabled && (
                 <m.div

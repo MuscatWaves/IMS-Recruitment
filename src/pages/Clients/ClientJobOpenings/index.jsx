@@ -8,16 +8,18 @@ import { Button, Input, message, Modal, Pagination, Table } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import axios from "axios";
 import ClientJobForm from "./clientjobcreate";
-import "./clientjobopenings.css";
 import JdViewData from "./JdViewData";
-import { useQuery } from "react-query";
+// import { useQuery } from "react-query";
 import dayjs from "dayjs";
+import jwtDecode from "jwt-decode";
+import "./clientjobopenings.css";
 
 const ClientJobOpenings = () => {
   const cookies = new Cookies();
   var localizedFormat = require("dayjs/plugin/localizedFormat");
   dayjs.extend(localizedFormat);
   const token = cookies.get("token");
+  const user = token && jwtDecode(token);
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
@@ -55,24 +57,24 @@ const ClientJobOpenings = () => {
     getData(name, page);
   };
 
-  const { data: contactResult } = useQuery(
-    ["contactResult"],
-    () =>
-      axios.get("/api/recruitment/client/contact", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.name,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
+  // const { data: contactResult } = useQuery(
+  //   ["contactResult"],
+  //   () =>
+  //     axios.get("/api/recruitment/client/contact", {
+  //       headers: {
+  //         Authorization: token,
+  //       },
+  //     }),
+  //   {
+  //     select: (data) => {
+  //       const newData = data.data.data.map((item) => ({
+  //         label: item.name,
+  //         value: item.id,
+  //       }));
+  //       return newData;
+  //     },
+  //   }
+  // );
 
   const getData = async (name, page) => {
     setLoading(true);
@@ -109,21 +111,12 @@ const ClientJobOpenings = () => {
       render: (record) => <div className="text-grey">{record.designation}</div>,
     },
     {
-      title: "Contact",
-      render: (record) => (
-        <div className="text-grey">
-          {
-            contactResult?.filter((item) => item.value === record.contact)[0]
-              ?.label
-          }
-        </div>
-      ),
-    },
-    {
-      title: "Created By",
+      title: "Posted By",
       render: (record) => (
         <div>
-          <div className="text-black">{record.createdBy}</div>
+          <div className="text-black">
+            {record.createdBy === 0 ? user?.name : record.creatorName}
+          </div>
           <div className="very-small-text">
             {dayjs(record.createdAt).format("llll")}
           </div>

@@ -6,12 +6,12 @@ import ScrollToTop from "./ScrollToTop";
 
 // Clients
 const ClientLogin = lazy(() => import("../pages/Clients/ClientLogin"));
-const ClientRegister = lazy(() => import("../pages/Clients/ClientRegister"));
+// const ClientRegister = lazy(() => import("../pages/Clients/ClientRegister"));
 const ClientDashBoard = lazy(() => import("../pages/Clients/ClientsDashBoard"));
 const ClientJobOpenings = lazy(() =>
   import("../pages/Clients/ClientJobOpenings")
 );
-const ClientContacts = lazy(() => import("../pages/Clients/ClientContacts"));
+// const ClientContacts = lazy(() => import("../pages/Clients/ClientContacts"));
 
 // Recruitment
 const RecruitmentLogin = lazy(() =>
@@ -23,9 +23,9 @@ const RecruitmentDashboard = lazy(() =>
 const RecruitmentJobOpenings = lazy(() =>
   import("../pages/Recruitment/RecruitmentJobOpenings")
 );
-const RecruitmentContacts = lazy(() =>
-  import("../pages/Recruitment/RecruitmentContacts")
-);
+// const RecruitmentContacts = lazy(() =>
+//   import("../pages/Recruitment/RecruitmentContacts")
+// );
 const RecruitmentClients = lazy(() =>
   import("../pages/Recruitment/RecruitmentClients")
 );
@@ -51,10 +51,10 @@ const Routing = () => {
               <Routes>
                 {/* Clients */}
                 <Route path="/client" element={<ClientLogin />}></Route>
-                <Route
+                {/* <Route
                   path="/client/register"
                   element={<ClientRegister />}
-                ></Route>
+                ></Route> */}
                 <Route
                   path="/client/dashboard"
                   element={<ClientDashBoard />}
@@ -63,10 +63,10 @@ const Routing = () => {
                   path="/client/jobs"
                   element={<ClientJobOpenings />}
                 ></Route>
-                <Route
+                {/* <Route
                   path="/client/contacts"
                   element={<ClientContacts />}
-                ></Route>
+                ></Route> */}
                 {/* Recruitment */}
                 <Route
                   path="/recruitment"
@@ -80,10 +80,10 @@ const Routing = () => {
                   path="/recruitment/jobs"
                   element={<RecruitmentJobOpenings />}
                 ></Route>
-                <Route
+                {/* <Route
                   path="/recruitment/contacts"
                   element={<RecruitmentContacts />}
-                ></Route>
+                ></Route> */}
                 <Route
                   path="/recruitment/clients"
                   element={<RecruitmentClients />}

@@ -1,9 +1,9 @@
 import { MdWorkOutline } from "react-icons/md";
-import { RiContactsBookLine } from "react-icons/ri";
+// import { RiContactsBookLine } from "react-icons/ri";
 import { BsPersonBadge } from "react-icons/bs";
 import { TbMessages } from "react-icons/tb";
 
-export const cards = [
+export const cards = (user) => [
   {
     id: 1,
     icon: MdWorkOutline,
@@ -11,19 +11,20 @@ export const cards = [
     path: "/recruitment/jobs",
     description: "Manage the job posting",
   },
-  {
-    id: 2,
-    icon: RiContactsBookLine,
-    title: "Contacts",
-    path: "/recruitment/contacts",
-    description: "Manage contact person information",
-  },
+  // {
+  //   id: 2,
+  //   icon: RiContactsBookLine,
+  //   title: "Contacts",
+  //   path: "/recruitment/contacts",
+  //   description: "Manage contact person information",
+  // },
   {
     id: 3,
     icon: BsPersonBadge,
     title: "Clients",
     path: "/recruitment/clients",
     description: "Manage client information",
+    disabled: !user.isHead,
   },
   {
     id: 4,
@@ -31,13 +32,14 @@ export const cards = [
     title: "Interview",
     path: "/recruitment/interviews",
     description: "Manage interview information",
+    disabled: !user.isHead,
   },
   {
     id: 5,
     icon: MdWorkOutline,
     title: "Resumes",
     path: "/recruitment/resumes",
-    disabled: true,
+    disabled: !user.isHead,
   },
 ];
 

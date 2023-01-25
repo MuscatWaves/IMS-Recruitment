@@ -157,7 +157,7 @@ const ClientLogin = () => {
             "Login"
           )}
         </Button>
-        <div className="flex-center small-margin-top flex-small-gap text-grey">
+        {/* <div className="flex-center small-margin-top flex-small-gap text-grey">
           Don't have an account?
           <span
             className="primary-color bold pointer"
@@ -165,7 +165,7 @@ const ClientLogin = () => {
           >
             Sign up
           </span>
-        </div>
+        </div> */}
       </Form>
     </m.div>
   );

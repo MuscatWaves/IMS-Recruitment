@@ -11,6 +11,7 @@ const RecruitmentJobOpeningFilter = ({
   contactResult,
   toggleFilterModal,
   loading,
+  user,
 }) => {
   const [form] = Form.useForm();
 
@@ -92,20 +93,22 @@ const RecruitmentJobOpeningFilter = ({
           <Form.Item name="nationality" label={"Nationality"}>
             <Input placeholder={"Nationality of the user"} />
           </Form.Item>
-          <Form.Item name="client" label={"Client"}>
-            <Select
-              placeholder={"Client of the job"}
-              options={clientResult}
-              allowClear
-            />
-          </Form.Item>
-          <Form.Item name="contact" label={"Contact"}>
+          {user?.isHead && (
+            <Form.Item name="client" label={"Client"}>
+              <Select
+                placeholder={"Client of the job"}
+                options={clientResult}
+                allowClear
+              />
+            </Form.Item>
+          )}
+          {/* <Form.Item name="contact" label={"Contact"}>
             <Select
               placeholder={"Contact of the job"}
               options={contactResult}
               allowClear
             />
-          </Form.Item>
+          </Form.Item> */}
         </div>
         <Divider />
         <div className="flex-at-end">

@@ -9,16 +9,19 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import RecruitmentJobForm from "./recruitmentjobcreate";
 import JdViewData from "./JdViewData";
-import "./recruitmentjobopenings.css";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaFilter } from "react-icons/fa";
 import { checkFilterActive } from "../../../utilities";
 import { useQuery } from "react-query";
 import RecruitmentJobOpeningFilter from "./recruitmentJobOpeningFilter";
+import jwtDecode from "jwt-decode";
+import dayjs from "dayjs";
+import "./recruitmentjobopenings.css";
 
 const RecruitmentJobOpenings = () => {
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const user = jwtDecode(token);
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
@@ -31,6 +34,8 @@ const RecruitmentJobOpenings = () => {
   const [deletionData, setDeletionData] = useState(null);
   const [deleteModal, toggleDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  var localizedFormat = require("dayjs/plugin/localizedFormat");
+  dayjs.extend(localizedFormat);
   const [filter, setFilter] = useState({
     designation: "",
     gender: "",
@@ -51,24 +56,24 @@ const RecruitmentJobOpenings = () => {
     getData(values, page);
   };
 
-  const { data: contactResult } = useQuery(
-    ["contactResult"],
-    () =>
-      axios.get("/api/recruitment/contact", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.name,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
+  // const { data: contactResult } = useQuery(
+  //   ["contactResult"],
+  //   () =>
+  //     axios.get("/api/recruitment/contact", {
+  //       headers: {
+  //         Authorization: token,
+  //       },
+  //     }),
+  //   {
+  //     select: (data) => {
+  //       const newData = data.data.data.map((item) => ({
+  //         label: item.name,
+  //         value: item.id,
+  //       }));
+  //       return newData;
+  //     },
+  //   }
+  // );
 
   const { data: clientResult } = useQuery(
     ["clientResult"],
@@ -79,6 +84,7 @@ const RecruitmentJobOpenings = () => {
         },
       }),
     {
+      enabled: user.isHead,
       select: (data) => {
         const newData = data.data.data.map((item) => ({
           label: item.name,
@@ -143,14 +149,20 @@ const RecruitmentJobOpenings = () => {
       render: (record) => <div className="text-grey">{record.designation}</div>,
     },
     {
-      title: "Gender",
-      render: (record) => <div className="text-grey">{record.gender}</div>,
+      title: "Company Name",
+      render: (record) => <div className="text-grey">{record.companyName}</div>,
     },
     {
-      title: "Nationality",
-      render: (record) => <div className="text-grey">{record.nationality}</div>,
+      title: "Website",
+      render: (record) => <div className="text-grey">{record.website}</div>,
     },
     {
+      title: "Created At",
+      render: (record) => (
+        <div className="text-grey">{dayjs(record.createdAt).format("ll")}</div>
+      ),
+    },
+    user?.isHead && {
       title: "Client",
       render: (record) => (
         <div className="text-grey">
@@ -161,17 +173,17 @@ const RecruitmentJobOpenings = () => {
         </div>
       ),
     },
-    {
-      title: "Contact",
-      render: (record) => (
-        <div className="text-grey">
-          {
-            contactResult?.filter((item) => item.value === record.contact)[0]
-              ?.label
-          }
-        </div>
-      ),
-    },
+    // {
+    //   title: "Contact",
+    //   render: (record) => (
+    //     <div className="text-grey">
+    //       {
+    //         contactResult?.filter((item) => item.value === record.contact)[0]
+    //           ?.label
+    //       }
+    //     </div>
+    //   ),
+    // },
     {
       title: "Status",
       render: (record) =>
@@ -195,30 +207,34 @@ const RecruitmentJobOpenings = () => {
           >
             <div className="bold">View Job Description</div>
           </Button>
-          <Button
-            type="primary"
-            shape="round"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setEditData(record);
-              toggleModal(true);
-            }}
-          />
-          <Button
-            type="primary"
-            shape="round"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => {
-              setDeletionData(record);
-              toggleDeleteModal(true);
-            }}
-          />
+          {user?.isHead && (
+            <>
+              <Button
+                type="primary"
+                shape="round"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setEditData(record);
+                  toggleModal(true);
+                }}
+              />
+              <Button
+                type="primary"
+                shape="round"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  setDeletionData(record);
+                  toggleDeleteModal(true);
+                }}
+              />
+            </>
+          )}
         </div>
       ),
       width: "300px",
     },
-  ];
+  ].filter((v) => v);
 
   const deleteData = async () => {
     setDeleteLoading(true);
@@ -265,7 +281,7 @@ const RecruitmentJobOpenings = () => {
           setEditData={setEditData}
           getData={refetch}
           filterValues={filter}
-          contactResult={contactResult}
+          // contactResult={contactResult}
         />
       )}
       {showDetailsModal && (
@@ -340,15 +356,17 @@ const RecruitmentJobOpenings = () => {
             >
               <FaFilter className="small-text" />
             </Button>
-            <Button
-              type="primary"
-              onClick={() => {
-                setEditData(null);
-                toggleModal(true);
-              }}
-            >
-              + Create
-            </Button>
+            {user?.isHead && (
+              <Button
+                type="primary"
+                onClick={() => {
+                  setEditData(null);
+                  toggleModal(true);
+                }}
+              >
+                + Create
+              </Button>
+            )}
           </div>
         </m.div>
         <AnimatePresence>
@@ -361,7 +379,7 @@ const RecruitmentJobOpenings = () => {
               getData={refetch}
               loading={isLoading}
               clientResult={clientResult}
-              contactResult={contactResult}
+              user={user}
             />
           )}
         </AnimatePresence>

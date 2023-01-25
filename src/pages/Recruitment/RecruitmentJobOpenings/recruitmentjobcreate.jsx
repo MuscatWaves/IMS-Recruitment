@@ -19,7 +19,6 @@ const RecruitmentJobForm = ({
   setEditData,
   getData,
   filterValues,
-  contactResult,
 }) => {
   const [form] = Form.useForm();
   const [isLoading, setLoading] = useState(false);
@@ -35,7 +34,7 @@ const RecruitmentJobForm = ({
   const handleUpdateUser = async (values) => {
     var data = JSON.stringify({
       ...(editData && { id: editData?.id }),
-      contact: values?.contact,
+      // contact: values?.contact,
       isActive: values?.isActive,
       designation: values?.designation,
       vacancies: values?.vacancies,
@@ -128,7 +127,7 @@ const RecruitmentJobForm = ({
           form={form}
           scrollToFirstError={true}
           initialValues={{
-            contact: editData?.contact || null,
+            // contact: editData?.contact || null,
             isActive: editData?.isActive || false,
             designation: editData?.designation,
             vacancies: editData?.vacancies || 1,
@@ -154,7 +153,7 @@ const RecruitmentJobForm = ({
             otherBenefits: editData?.otherBenefits || "",
           }}
         >
-          <Form.Item
+          {/* <Form.Item
             name="contact"
             label={"Contact"}
             rules={[
@@ -169,7 +168,7 @@ const RecruitmentJobForm = ({
               options={contactResult}
               allowClear
             />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             name={"isActive"}
             label={"Job Status"}
