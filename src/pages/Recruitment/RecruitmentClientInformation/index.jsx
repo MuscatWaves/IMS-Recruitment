@@ -13,6 +13,7 @@ import { useQuery } from "react-query";
 import RecruitmentClientInformationForm from "./recruitmentclientinformationcreate";
 import RecruitmentClientInformationFilter from "./recruitmentClientInformationFilter";
 import "./recruitmentcontacts.css";
+import { MdOutlineHomeWork } from "react-icons/md";
 
 const RecruitmentClientInformation = () => {
   const cookies = new Cookies();
@@ -31,10 +32,9 @@ const RecruitmentClientInformation = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [filter, setFilter] = useState({
     search: "",
-    candidate: "",
-    client: "",
-    job: "",
-    interview: "",
+    clientName: "",
+    crNumber: "",
+    clientEmail: "",
   });
   const [isFilterModal, toggleFilterModal] = useState(false);
 
@@ -92,7 +92,7 @@ const RecruitmentClientInformation = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/cd?search=${values.search}&candidate=${values.candidate}&client=${values.client}&job=${values.job}&interview=${values.interview}`,
+        `/api/cd?search=${values.search}&clientName=${values.clientName}&crNumber=${values.crNumber}&clientEmail=${values.clientEmail}`,
         config
       );
       if (Data.status === 200) {
@@ -131,6 +131,10 @@ const RecruitmentClientInformation = () => {
       render: (record) => <div className="text-grey">{record.mobile}</div>,
     },
     {
+      title: "CR No",
+      render: (record) => <div className="text-grey">{record.crNumber}</div>,
+    },
+    {
       title: "Website",
       render: (record) => (
         <div
@@ -164,7 +168,7 @@ const RecruitmentClientInformation = () => {
             }}
             ghost
           >
-            <div className="bold">View Profile</div>
+            <div className="bold">View More Info</div>
           </Button>
           <Button
             type="primary"
@@ -261,7 +265,50 @@ const RecruitmentClientInformation = () => {
         }}
         centered
       >
-        <div>{showDetailsData?.clientName}</div>
+        <div>
+          <div>
+            <div className="flex-gap">
+              <div className="dash-card-icon">
+                <MdOutlineHomeWork style={{ fontSize: "40px" }} />
+              </div>
+              <div>
+                <div className="large-text text-orange bolder">
+                  {showDetailsData?.clientName}
+                </div>
+                <div className="medium-text text-grey bold">
+                  {showDetailsData?.clientEmail}
+                </div>
+              </div>
+            </div>
+            <div className="small-padding">
+              <div className="text-black bolder very-small-text">Address:</div>
+              <div className="text-grey">{showDetailsData?.companyAddress}</div>
+            </div>
+            <div className="flex-between">
+              <div className="small-padding">
+                <div className="text-black bolder very-small-text">Mobile:</div>
+                <div className="text-grey">{showDetailsData?.mobile}</div>
+              </div>
+              <div className="small-padding">
+                <div className="text-black bolder very-small-text">
+                  Landline:
+                </div>
+                <div className="text-grey">{showDetailsData?.landline}</div>
+              </div>
+              <div className="small-padding">
+                <div className="text-black bolder very-small-text">
+                  Website:
+                </div>
+                <div
+                  className="text-grey link pointer"
+                  onClick={() => window.open(showDetailsData?.website)}
+                >
+                  {showDetailsData?.website}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </Modal>
       <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
       <m.div
@@ -280,7 +327,6 @@ const RecruitmentClientInformation = () => {
           <BreadCrumb items={navigation} />
           <div className="flex-small-gap">
             <form
-              className="hidden"
               onSubmit={(e) => {
                 e.preventDefault();
                 setFilter({
@@ -289,11 +335,9 @@ const RecruitmentClientInformation = () => {
                 });
                 refetch({
                   search: name,
-                  name: filter?.name || "",
-                  email: filter?.email || "",
-                  department: filter?.department || "",
-                  client: filter?.client || "",
-                  jobtitle: filter?.jobtitle || "",
+                  clientName: filter?.clientName,
+                  crNumber: filter?.crNumber,
+                  clientEmail: filter?.clientEmail,
                 });
               }}
             >
@@ -308,7 +352,6 @@ const RecruitmentClientInformation = () => {
               </Button>
             </form>
             <Button
-              className="hidden"
               type="primary"
               onClick={() => {
                 toggleFilterModal(true);

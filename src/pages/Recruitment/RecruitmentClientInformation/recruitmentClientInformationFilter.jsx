@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Divider, Form, Input, Select } from "antd";
+import { Button, Divider, Form, Input } from "antd";
 import { m } from "framer-motion";
 
 const RecruitmentClientInformationFilter = ({
@@ -33,19 +33,15 @@ const RecruitmentClientInformationFilter = ({
   const handleSearching = async (values) => {
     getData({
       search: filterData.search,
-      name: values?.name || "",
-      email: values?.email || "",
-      department: values?.department || "",
-      client: values?.client || "",
-      jobtitle: values?.jobtitle || "",
+      clientName: values?.clientName || "",
+      crNumber: values?.crNumber || "",
+      clientEmail: values?.clientEmail || "",
     });
     setFilterData({
       search: filterData.search,
-      name: values?.name || "",
-      email: values?.email || "",
-      department: values?.department || "",
-      client: values?.client || "",
-      jobtitle: values?.jobtitle || "",
+      clientName: values?.clientName || "",
+      crNumber: values?.crNumber || "",
+      clientEmail: values?.clientEmail || "",
     });
   };
 
@@ -66,32 +62,20 @@ const RecruitmentClientInformationFilter = ({
         form={form}
         scrollToFirstError={true}
         initialValues={{
-          name: filterData?.name || "",
-          email: filterData?.email || "",
-          department: filterData?.department || "",
-          client: filterData?.client || null,
-          jobtitle: filterData?.jobtitle || "",
+          clientName: filterData?.clientName || "",
+          crNumber: filterData?.crNumber || "",
+          clientEmail: filterData?.clientEmail || "",
         }}
       >
         <div className="filter-box-inner">
-          <Form.Item name="name" label={"Name"}>
-            <Input placeholder={"Name of the user"} />
+          <Form.Item name="clientName" label={"Client Name"}>
+            <Input placeholder={"Name of the Client"} />
           </Form.Item>
-          <Form.Item name="email" label={"Email"}>
-            <Input placeholder={"Email of the user"} />
+          <Form.Item name="crNumber" label={"CR Number"}>
+            <Input placeholder={"CR Number of company"} />
           </Form.Item>
-          <Form.Item name="jobtitle" label={"Job title"}>
-            <Input placeholder={"Job title of the user"} />
-          </Form.Item>
-          <Form.Item name="department" label={"Department"}>
-            <Input placeholder={"Department of the user"} />
-          </Form.Item>
-          <Form.Item name="client" label={"Client"}>
-            <Select
-              placeholder={"Client of the user"}
-              options={clientsList}
-              allowClear
-            />
+          <Form.Item name="clientEmail" label={"Client Email"}>
+            <Input placeholder={"Email of the client"} />
           </Form.Item>
         </div>
         <Divider />

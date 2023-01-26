@@ -43,3 +43,14 @@
 .client-contact-card--first {
   align-items: flex-start;
 }
+
+.dash-card-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px;
+  width: 80px;
+  height: 80px;
+  padding: 0.2rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
