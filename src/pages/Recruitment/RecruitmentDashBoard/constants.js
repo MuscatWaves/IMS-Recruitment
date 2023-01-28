@@ -1,4 +1,9 @@
-import { MdWorkOutline } from "react-icons/md";
+import {
+  MdWorkOutline,
+  MdOutlineAssignmentTurnedIn,
+  MdOutlineAssignmentInd,
+  MdOutlineFindInPage,
+} from "react-icons/md";
 // import { RiContactsBookLine } from "react-icons/ri";
 import { BsPersonBadge } from "react-icons/bs";
 import { TbMessages } from "react-icons/tb";
@@ -28,7 +33,7 @@ export const cards = (user) => [
   },
   {
     id: 4,
-    icon: BsPersonBadge,
+    icon: MdOutlineAssignmentInd,
     title: "Client Information",
     path: "/recruitment/clientInformation",
     description: "Manage client information",
@@ -44,9 +49,18 @@ export const cards = (user) => [
   },
   {
     id: 6,
-    icon: MdWorkOutline,
+    icon: MdOutlineAssignmentTurnedIn,
+    title: "Job Assignment",
+    path: "/recruitment/jobAssignment",
+    description: "Assigning the job for the recruiters",
+    disabled: !user.isHead,
+  },
+  {
+    id: 7,
+    icon: MdOutlineFindInPage,
     title: "Resumes",
     path: "/recruitment/resumes",
+    description: "Oman Job Resumes of the candidates",
     disabled: !user.isHead,
   },
 ];

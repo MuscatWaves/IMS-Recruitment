@@ -1,0 +1,44 @@
+.recruitment-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.recruitment-filter-nav-header-without {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  background-color: #fff;
+  border-radius: 0 0 12px 12px;
+}
+
+.pagination-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #6b6b6b;
+}
+
+.client-contact-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  align-items: center;
+}
+
+.client-contact-card--first,
+.client-contact-card--second {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.client-contact-card--first {
+  align-items: flex-start;
+}

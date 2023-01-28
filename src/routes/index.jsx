@@ -38,6 +38,9 @@ const RecruitmentCVParsing = lazy(() =>
 const RecruitmentClientInformation = lazy(() =>
   import("../pages/Recruitment/RecruitmentClientInformation")
 );
+const RecruitmentJobAssignment = lazy(() =>
+  import("../pages/Recruitment/RecruitmentJobAssignment")
+);
 
 // Misc
 const PageNotFound = lazy(() => import("../components/NoPageFound"));
@@ -102,6 +105,10 @@ const Routing = () => {
                 <Route
                   path="/recruitment/clientInformation"
                   element={<RecruitmentClientInformation />}
+                ></Route>
+                <Route
+                  path="/recruitment/jobAssignment"
+                  element={<RecruitmentJobAssignment />}
                 ></Route>
                 {/* Misc */}
                 <Route path="/notAuthorized" element={<NotAuthorize />}></Route>
