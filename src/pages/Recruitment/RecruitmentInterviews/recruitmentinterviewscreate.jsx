@@ -108,7 +108,7 @@ const RecruitmentInterviewsForm = ({
     var config = {
       method: "get",
       url:
-        "https://proud-pea-coat-eel.cyclic.app/api/cv?name=" +
+        "https://sparkling-cuff-links-fox.cyclic.app/api/cv?name=" +
         inputValue +
         "&page=1",
       headers: {

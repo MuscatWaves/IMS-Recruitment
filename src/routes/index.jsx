@@ -41,6 +41,9 @@ const RecruitmentClientInformation = lazy(() =>
 const RecruitmentJobAssignment = lazy(() =>
   import("../pages/Recruitment/RecruitmentJobAssignment")
 );
+const RecruitmentCVBatch = lazy(() =>
+  import("../pages/Recruitment/RecruitmentCVBatch")
+);
 
 // Misc
 const PageNotFound = lazy(() => import("../components/NoPageFound"));
@@ -109,6 +112,10 @@ const Routing = () => {
                 <Route
                   path="/recruitment/jobAssignment"
                   element={<RecruitmentJobAssignment />}
+                ></Route>
+                <Route
+                  path="/recruitment/cvBatch"
+                  element={<RecruitmentCVBatch />}
                 ></Route>
                 {/* Misc */}
                 <Route path="/notAuthorized" element={<NotAuthorize />}></Route>

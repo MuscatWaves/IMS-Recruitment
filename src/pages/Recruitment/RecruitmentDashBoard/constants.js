@@ -63,6 +63,13 @@ export const cards = (user) => [
     description: "Oman Job Resumes of the candidates",
     disabled: !user.isHead,
   },
+  {
+    id: 8,
+    icon: MdOutlineFindInPage,
+    title: "CV Batch",
+    path: "/recruitment/cvBatch",
+    description: "CV batch of the candidates",
+  },
 ];
 
 export const container = {

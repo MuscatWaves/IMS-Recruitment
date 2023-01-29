@@ -7,47 +7,38 @@ import { container, item } from "../RecruitmentDashBoard/constants";
 import { Button, Input, message, Modal, Pagination, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import RecruitmentJobForm from "./recruitmentjobcreate";
-import JdViewData from "./JdViewData";
-import { AiOutlineSearch } from "react-icons/ai";
+import dayjs from "dayjs";
 import { FaFilter } from "react-icons/fa";
 import { checkFilterActive } from "../../../utilities";
+import { AiOutlineSearch } from "react-icons/ai";
 import { useQuery } from "react-query";
-import RecruitmentJobOpeningFilter from "./recruitmentJobOpeningFilter";
-import jwtDecode from "jwt-decode";
-import dayjs from "dayjs";
-import "./recruitmentjobopenings.css";
+import RecruitmentCvBatchForm from "./recruitmentcvbatchcreate";
+import RecruitmentCvBatchFilter from "./recruitmentCvBatchFilter";
+import "./recruitmentcvbatch.css";
 
-const RecruitmentJobOpenings = () => {
+const RecruitmentCVBatch = () => {
   const cookies = new Cookies();
   const token = cookies.get("token");
-  const user = jwtDecode(token);
+  var localizedFormat = require("dayjs/plugin/localizedFormat");
+  dayjs.extend(localizedFormat);
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [showDetailsData, setShowDetailsData] = useState({});
   const [isModalOpen, toggleModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [deletionData, setDeletionData] = useState(null);
   const [deleteModal, toggleDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  var localizedFormat = require("dayjs/plugin/localizedFormat");
-  dayjs.extend(localizedFormat);
   const [filter, setFilter] = useState({
-    designation: "",
-    gender: "",
-    nationality: "",
-    client: "",
-    contact: "",
     search: "",
+    status: "",
   });
   const [isFilterModal, toggleFilterModal] = useState(false);
 
   useEffect(() => {
-    document.title = "Recruitment - Job Openings";
+    document.title = "Recruitment - CV Batch";
     refetch(filter);
     // eslint-disable-next-line
   }, []);
@@ -56,35 +47,68 @@ const RecruitmentJobOpenings = () => {
     getData(values, page);
   };
 
-  // const { data: contactResult } = useQuery(
-  //   ["contactResult"],
-  //   () =>
-  //     axios.get("/api/recruitment/contact", {
-  //       headers: {
-  //         Authorization: token,
-  //       },
-  //     }),
-  //   {
-  //     select: (data) => {
-  //       const newData = data.data.data.map((item) => ({
-  //         label: item.name,
-  //         value: item.id,
-  //       }));
-  //       return newData;
-  //     },
-  //   }
-  // );
+  const navigation = [
+    { id: 0, name: "Dashboard", url: "/recruitment/dashboard" },
+    {
+      id: 1,
+      name: "CV Batch",
+      active: true,
+    },
+  ];
 
-  const { data: clientResult } = useQuery(
-    ["clientResult"],
+  const onChange = (page) => {
+    setPage(page);
+    getData(filter, page);
+  };
+
+  const statusList = [
+    {
+      id: 1,
+      label: "Pending",
+      value: 0,
+    },
+    {
+      id: 2,
+      label: "Accepted",
+      value: 1,
+    },
+    {
+      id: 1,
+      label: "Rejected",
+      value: 2,
+    },
+  ];
+
+  const { data: jobsList } = useQuery(
+    ["jobs"],
     () =>
-      axios.get("/api/client", {
+      axios.get("/api/ja", {
         headers: {
           Authorization: token,
         },
       }),
     {
-      enabled: user.isHead,
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: item.jobDesignation,
+          value: item.id,
+        }));
+        return newData;
+      },
+    }
+  );
+
+  const { data: recruiterList } = useQuery(
+    ["recruiter"],
+    () =>
+      axios.get("/api/recruitment", {
+        headers: {
+          Authorization: token,
+        },
+      }),
+    {
+      refetchOnWindowFocus: false,
       select: (data) => {
         const newData = data.data.data.map((item) => ({
           label: item.name,
@@ -94,20 +118,6 @@ const RecruitmentJobOpenings = () => {
       },
     }
   );
-
-  const navigation = [
-    { id: 0, name: "Dashboard", url: "/recruitment/dashboard" },
-    {
-      id: 1,
-      name: "Job Openings",
-      active: true,
-    },
-  ];
-
-  const onChange = (page) => {
-    setPage(page);
-    getData(filter, page);
-  };
 
   const getData = async (values, page) => {
     setLoading(true);
@@ -119,7 +129,7 @@ const RecruitmentJobOpenings = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/recruitment/job?designation=${values.designation}&gender=${values.gender}&nationality=${values.nationality}&client=${values.client}&contact=${values.contact}&search=${values.search}&page=${page}`,
+        `/api/batch?search=${values.search}`,
         config
       );
       if (Data.status === 200) {
@@ -133,74 +143,79 @@ const RecruitmentJobOpenings = () => {
         } else {
           message.error("Ouch, Something Went Terribly Wrong!");
           setLoading(false);
-          setData([]);
         }
       }
     } catch (err) {
       console.log(err);
-      setData([]);
+      setLoading(false);
+    }
+  };
+
+  const getCVData = async (id) => {
+    let config = {
+      headers: {
+        Authorization: token,
+      },
+    };
+    try {
+      const Data = await axios.get(`/api/cv/${id}`, config);
+      if (Data.status === 200) {
+        const record = Data.data.data[0];
+        const name = `${record.name} ${record.job.replace("/", "-")}`
+          .replace(/\s+/g, "-")
+          .replace(/\./g, "");
+        window.open(`https://share.omanjobs.om/cv/${record.id}/${name}`);
+      } else {
+        if (Data.status === 201) {
+          message.error(Data.data.error);
+        } else {
+          message.error("Ouch, Something Went Terribly Wrong!");
+        }
+      }
+    } catch (err) {
+      console.log(err);
       setLoading(false);
     }
   };
 
   const columns = [
     {
-      title: "Job Title",
-      render: (record) => <div className="text-grey">{record.designation}</div>,
+      title: "Batch Name",
+      render: (record) => <div className="text-grey">{record.batchName}</div>,
     },
     {
-      title: "Company Name",
-      render: (record) => (
-        <div className="text-grey">{record.clientDetail_clientName}</div>
-      ),
-    },
-    {
-      title: "Website",
-      render: (record) => (
-        <div
-          className="text-grey link pointer"
-          onClick={() => window.open(record.clientDetail_website)}
-        >
-          {record.clientDetail_website}
-        </div>
-      ),
-    },
-    {
-      title: "Created At",
-      render: (record) => (
-        <div className="text-grey">{dayjs(record.createdAt).format("ll")}</div>
-      ),
-    },
-    user?.isHead && {
-      title: "Client",
+      title: "Job Assigned To",
       render: (record) => (
         <div className="text-grey">
-          {
-            clientResult?.filter((item) => item.value === record.client)[0]
-              ?.label
-          }
+          {console.log(
+            jobsList,
+            jobsList?.filter((item) => item.value === record.assignId)
+          )}
+          {jobsList?.filter((item) => item.value === record.assignId)[0]?.label}
         </div>
       ),
     },
-    // {
-    //   title: "Contact",
-    //   render: (record) => (
-    //     <div className="text-grey">
-    //       {
-    //         contactResult?.filter((item) => item.value === record.contact)[0]
-    //           ?.label
-    //       }
-    //     </div>
-    //   ),
-    // },
+    {
+      title: "Created By",
+      render: (record) => (
+        <div>
+          <div className="text-black bold">Prabin</div>
+          <div className="very-small-text text-grey bold">
+            {dayjs(record.createdAt).format("llll")}
+          </div>
+        </div>
+      ),
+    },
     {
       title: "Status",
-      render: (record) =>
-        record.isActive ? (
-          <div className="text-green">Active</div>
-        ) : (
-          <div className="text-red">Inactive</div>
-        ),
+      render: (record) => {
+        if (record.status === 0)
+          return <div className="text-orange">Pending</div>;
+        if (record.status === 1)
+          return <div className="text-green">Accepted</div>;
+        if (record.status === 2)
+          return <div className="text-red">Rejected</div>;
+      },
     },
     {
       title: "Actions",
@@ -209,47 +224,42 @@ const RecruitmentJobOpenings = () => {
           <Button
             type="primary"
             onClick={() => {
-              setShowDetailsData(record);
-              setShowDetailsModal(true);
+              getCVData(record.cv);
             }}
             ghost
           >
-            <div className="bold">View Job Description</div>
+            <div className="bold">View CV Attached</div>
           </Button>
-          {user?.isHead && (
-            <>
-              <Button
-                type="primary"
-                shape="round"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setEditData(record);
-                  toggleModal(true);
-                }}
-              />
-              <Button
-                type="primary"
-                shape="round"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => {
-                  setDeletionData(record);
-                  toggleDeleteModal(true);
-                }}
-              />
-            </>
-          )}
+          <Button
+            type="primary"
+            shape="round"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditData(record);
+              toggleModal(true);
+            }}
+          />
+          <Button
+            type="primary"
+            shape="round"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => {
+              setDeletionData(record);
+              toggleDeleteModal(true);
+            }}
+          />
         </div>
       ),
-      width: "300px",
+      width: "200px",
     },
-  ].filter((v) => v);
+  ];
 
   const deleteData = async () => {
     setDeleteLoading(true);
     await axios({
       method: "delete",
-      url: `/api/recruitment/job/${deletionData.id}`,
+      url: `/api/batch/${deletionData.id}`,
       headers: {
         Accept: "application/json",
         "Content-Type": "multipart/form-data",
@@ -283,25 +293,18 @@ const RecruitmentJobOpenings = () => {
       transition={{ duration: 0.6 }}
     >
       {isModalOpen && (
-        <RecruitmentJobForm
+        <RecruitmentCvBatchForm
           isModalOpen={isModalOpen}
           setModal={toggleModal}
           editData={editData}
           setEditData={setEditData}
           getData={refetch}
-          filterValues={filter}
-          clientResult={clientResult}
+          filter={filter}
+          jobsList={jobsList}
+          recruiterList={recruiterList}
+          statusList={statusList}
         />
       )}
-      {showDetailsModal && (
-        <JdViewData
-          open={showDetailsModal}
-          setOpen={setShowDetailsModal}
-          data={showDetailsData}
-          setData={setShowDetailsData}
-        />
-      )}
-
       <Modal
         title="Delete Confirmation"
         open={deleteModal}
@@ -311,7 +314,7 @@ const RecruitmentJobOpenings = () => {
         okType={"danger"}
         confirmLoading={deleteLoading}
       >
-        <p>{`Are you sure you want to delete "${deletionData?.designation}" from job data?`}</p>
+        <p>{`Are you sure you want to delete "${deletionData?.name}" from client data?`}</p>
       </Modal>
       <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
       <m.div
@@ -321,7 +324,7 @@ const RecruitmentJobOpenings = () => {
         animate="show"
       >
         <m.div className="title-text primary-color" variants={item}>
-          Job Openings
+          CV Batch
         </m.div>
         <m.div
           className="recruitment-filter-nav-header-without"
@@ -330,6 +333,7 @@ const RecruitmentJobOpenings = () => {
           <BreadCrumb items={navigation} />
           <div className="flex-small-gap">
             <form
+              className="hidden"
               onSubmit={(e) => {
                 e.preventDefault();
                 setFilter({
@@ -337,17 +341,14 @@ const RecruitmentJobOpenings = () => {
                   search: name,
                 });
                 refetch({
-                  designation: filter?.designation || "",
-                  gender: filter?.gender || "",
-                  nationality: filter?.nationality || "",
-                  client: filter?.client || "",
-                  contact: filter?.contact || "",
                   search: name,
+                  name: filter?.name || "",
+                  email: filter?.email || "",
                 });
               }}
             >
               <Input
-                placeholder="Search here!"
+                placeholder="Search"
                 prefix={<AiOutlineSearch className="large-text" />}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -365,30 +366,27 @@ const RecruitmentJobOpenings = () => {
             >
               <FaFilter className="small-text" />
             </Button>
-            {user?.isHead && (
-              <Button
-                type="primary"
-                onClick={() => {
-                  setEditData(null);
-                  toggleModal(true);
-                }}
-              >
-                + Create
-              </Button>
-            )}
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditData(null);
+                toggleModal(true);
+              }}
+            >
+              + Create
+            </Button>
           </div>
         </m.div>
         <AnimatePresence>
           {isFilterModal && (
-            <RecruitmentJobOpeningFilter
+            <RecruitmentCvBatchFilter
               isFilterModal={isFilterModal}
               toggleFilterModal={toggleFilterModal}
               filterData={filter}
               setFilterData={setFilter}
               getData={refetch}
               loading={isLoading}
-              clientResult={clientResult}
-              user={user}
+              statusList={statusList}
             />
           )}
         </AnimatePresence>
@@ -417,4 +415,4 @@ const RecruitmentJobOpenings = () => {
   );
 };
 
-export default RecruitmentJobOpenings;
+export default RecruitmentCVBatch;

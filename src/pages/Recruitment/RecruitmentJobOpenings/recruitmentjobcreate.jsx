@@ -19,6 +19,7 @@ const RecruitmentJobForm = ({
   setEditData,
   getData,
   filterValues,
+  clientResult,
 }) => {
   const [form] = Form.useForm();
   const [isLoading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ const RecruitmentJobForm = ({
     var data = JSON.stringify({
       ...(editData && { id: editData?.id }),
       // contact: values?.contact,
+      client: values?.client,
       isActive: values?.isActive,
       designation: values?.designation,
       vacancies: values?.vacancies,
@@ -127,7 +129,7 @@ const RecruitmentJobForm = ({
           form={form}
           scrollToFirstError={true}
           initialValues={{
-            // contact: editData?.contact || null,
+            client: editData?.client || null,
             isActive: editData?.isActive || false,
             designation: editData?.designation,
             vacancies: editData?.vacancies || 1,
@@ -153,9 +155,9 @@ const RecruitmentJobForm = ({
             otherBenefits: editData?.otherBenefits || "",
           }}
         >
-          {/* <Form.Item
-            name="contact"
-            label={"Contact"}
+          <Form.Item
+            name="client"
+            label={"Client"}
             rules={[
               {
                 required: true,
@@ -165,10 +167,10 @@ const RecruitmentJobForm = ({
           >
             <Select
               placeholder="Please select a contact"
-              options={contactResult}
+              options={clientResult}
               allowClear
             />
-          </Form.Item> */}
+          </Form.Item>
           <Form.Item
             name={"isActive"}
             label={"Job Status"}
