@@ -14,11 +14,13 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { useQuery } from "react-query";
 import RecruitmentCvBatchForm from "./recruitmentcvbatchcreate";
 import RecruitmentCvBatchFilter from "./recruitmentCvBatchFilter";
+import { useNavigate } from "react-router-dom";
 import "./recruitmentcvbatch.css";
 
 const RecruitmentCVBatch = () => {
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const navigateTo = useNavigate();
   var localizedFormat = require("dayjs/plugin/localizedFormat");
   dayjs.extend(localizedFormat);
   const [name, setName] = useState("");
@@ -63,17 +65,14 @@ const RecruitmentCVBatch = () => {
 
   const statusList = [
     {
-      id: 1,
       label: "Pending",
       value: 0,
     },
     {
-      id: 2,
       label: "Accepted",
       value: 1,
     },
     {
-      id: 1,
       label: "Rejected",
       value: 2,
     },
@@ -186,13 +185,7 @@ const RecruitmentCVBatch = () => {
     {
       title: "Job Assigned To",
       render: (record) => (
-        <div className="text-grey">
-          {console.log(
-            jobsList,
-            jobsList?.filter((item) => item.value === record.assignId)
-          )}
-          {jobsList?.filter((item) => item.value === record.assignId)[0]?.label}
-        </div>
+        <div className="text-grey">{record.JobDesignation}</div>
       ),
     },
     {
@@ -365,6 +358,14 @@ const RecruitmentCVBatch = () => {
               className={checkFilterActive(filter) && "filter-button--active"}
             >
               <FaFilter className="small-text" />
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                navigateTo("/recruitment/create/multipleCvBatch");
+              }}
+            >
+              + Create Multiple
             </Button>
             <Button
               type="primary"

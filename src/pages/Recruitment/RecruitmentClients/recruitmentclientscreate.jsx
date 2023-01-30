@@ -10,7 +10,7 @@ const RecruitmentClientsForm = ({
   editData,
   setEditData,
   getData,
-  filter
+  filter,
 }) => {
   const [form] = Form.useForm();
   const [isLoading, setLoading] = useState(false);
@@ -66,6 +66,7 @@ const RecruitmentClientsForm = ({
       {isModalOpen && (
         <Form
           layout="vertical"
+          className="flex-gap-column"
           onFinish={handleUpdateUser}
           form={form}
           scrollToFirstError={true}

@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useQuery } from "react-query";
 import { AnimatePresence, m } from "framer-motion";
-import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
+import Header from "../../../components/Header";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../RecruitmentDashBoard/constants";
-import { Button, Input, message, Pagination, Table, Tooltip } from "antd";
+import {
+  Button,
+  Input,
+  message,
+  Pagination,
+  Table,
+  Tooltip,
+  Form,
+  Select,
+} from "antd";
 import { HiMail } from "react-icons/hi";
-import axios from "axios";
 import dayjs from "dayjs";
-import { useQuery } from "react-query";
 import {
   checkFilterActive,
   checkImageIcon,
@@ -17,11 +26,12 @@ import {
 import { FaFilter } from "react-icons/fa";
 import { RiMessage3Fill } from "react-icons/ri";
 import { AiOutlineExclamationCircle, AiOutlineSearch } from "react-icons/ai";
-import CVParsingFilter from "./cvParsingFilter";
+import CVParsingFilter from "../../Recruitment/RecruitmentCVParsing/cvParsingFilter";
 import moment from "moment";
-import "./cvParsing.css";
+import "../../Recruitment/RecruitmentCVParsing/cvParsing.css";
 
-const RecruitmentCVParsing = () => {
+const BatchCreateMultiple = () => {
+  const [form] = Form.useForm();
   const cookies = new Cookies();
   const token = cookies.get("token");
   var localizedFormat = require("dayjs/plugin/localizedFormat");
@@ -31,6 +41,9 @@ const RecruitmentCVParsing = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
+  const [size, setSize] = useState(10);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [createLoading, setCreateLoading] = useState(false);
   const [filter, setFilter] = useState({
     search: "",
     JobCategory: "",
@@ -45,30 +58,32 @@ const RecruitmentCVParsing = () => {
   const [isFilterModal, toggleFilterModal] = useState(false);
 
   useEffect(() => {
-    document.title = "Recruitment - Resumes";
+    document.title = "Recruitment - CV Batch Multiple";
     refetch(filter);
     // eslint-disable-next-line
   }, []);
 
   const refetch = (values) => {
-    getData(values, page);
+    getData(values, page, size);
   };
 
   const navigation = [
     { id: 0, name: "Dashboard", url: "/recruitment/dashboard" },
+    { id: 1, name: "CV Batch", url: "/recruitment/cvBatch" },
     {
-      id: 1,
-      name: "Resumes",
+      id: 2,
+      name: "CV Multiple Batch create",
       active: true,
     },
   ];
 
-  const onChange = (page) => {
+  const onChange = (page, size) => {
     setPage(page);
-    getData(filter, page);
+    setSize(size);
+    getData(filter, page, size);
   };
 
-  const getData = async (values, page) => {
+  const getData = async (values, page, size) => {
     setLoading(true);
     setData([]);
     let config = {
@@ -78,7 +93,7 @@ const RecruitmentCVParsing = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/cv?page=${page}&search=${values.search}&JobCategory=${values.JobCategory}&Age=${values.Age}&JobTitle=${values.JobTitle}&Nationality=${values.Nationality}&Gender=${values.Gender}&MaritalStatus=${values.MaritalStatus}&FromDate=${values.FromDate}&ToDate=${values.ToDate}&user=`,
+        `/api/cv?page=${page}&rows=${size}&search=${values.search}&JobCategory=${values.JobCategory}&Age=${values.Age}&JobTitle=${values.JobTitle}&Nationality=${values.Nationality}&Gender=${values.Gender}&MaritalStatus=${values.MaritalStatus}&FromDate=${values.FromDate}&ToDate=${values.ToDate}&user=`,
         config
       );
       if (Data.status === 200) {
@@ -307,14 +322,71 @@ const RecruitmentCVParsing = () => {
     }
   );
 
+  const handleUpdateUser = async (values) => {
+    if (selectedRowKeys.length === 0) {
+      message.error("No CVs attached!");
+      return;
+    }
+    var createData = JSON.stringify({
+      cv: selectedRowKeys,
+      assignId: Number(values?.assignId) || "",
+      batchName: values?.batchName || "",
+    });
+    setCreateLoading(true);
+    var config = {
+      method: "post",
+      url: "/api/batch/multiple",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+      data: createData,
+    };
+
+    axios(config)
+      .then(function (response) {
+        message.success(response.data.message);
+        setCreateLoading(false);
+      })
+      .catch(function (error) {
+        message.error("Something Went Wrong!");
+        setCreateLoading(false);
+      });
+  };
+
+  const { data: jobsList } = useQuery(
+    ["jobs"],
+    () =>
+      axios.get("/api/ja", {
+        headers: {
+          Authorization: token,
+        },
+      }),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const newData = data.data.data.map((item) => ({
+          label: item.jobDesignation,
+          value: item.id,
+        }));
+        return newData;
+      },
+    }
+  );
+
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
   return (
-    <m.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      {/* {isModalOpen && (
+    <div>
+      <m.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        {/* {isModalOpen && (
         <RecruitmentInterviewsForm
           isModalOpen={isModalOpen}
           setModal={toggleModal}
@@ -328,7 +400,7 @@ const RecruitmentCVParsing = () => {
           filter={filter}
         />
       )} */}
-      {/* <Modal
+        {/* <Modal
         title="Delete Confirmation"
         open={deleteModal}
         onOk={deleteData}
@@ -339,64 +411,64 @@ const RecruitmentCVParsing = () => {
       >
         <p>{`Are you sure you want to delete "${deletionData?.candidate}" from interview data?`}</p>
       </Modal> */}
-      <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
-      <m.div
-        className="recruitment-contacts"
-        variants={container}
-        initial="hidden"
-        animate="show"
-      >
-        <m.div className="title-text primary-color" variants={item}>
-          Resumes
-        </m.div>
+        <Header home={"/recruitment/dashboard"} logOut={"/recruitment"} />
         <m.div
-          className="recruitment-filter-nav-header-without"
-          variants={item}
+          className="recruitment-contacts"
+          variants={container}
+          initial="hidden"
+          animate="show"
         >
-          <BreadCrumb items={navigation} />
-          <div className="flex-small-gap">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setFilter({
-                  ...filter,
-                  search: name,
-                });
-                refetch({
-                  search: name,
-                  JobCategory: filter?.JobCategory || "",
-                  Age: filter?.Age || "",
-                  JobTitle: filter?.JobTitle || "",
-                  Nationality: filter?.Nationality || "",
-                  Gender: filter?.Gender || "",
-                  MaritalStatus: filter?.MaritalStatus || "",
-                  FromDate: filter?.FromDate || "",
-                  ToDate: filter?.ToDate || "",
-                });
-              }}
-            >
-              <Input
-                placeholder="Search"
-                prefix={<AiOutlineSearch className="large-text" />}
+          <m.div className="title-text primary-color" variants={item}>
+            Create Multiple CV Batch
+          </m.div>
+          <m.div
+            className="recruitment-filter-nav-header-without"
+            variants={item}
+          >
+            <BreadCrumb items={navigation} />
+            <div className="flex-small-gap">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setFilter({
+                    ...filter,
+                    search: name,
+                  });
+                  refetch({
+                    search: name,
+                    JobCategory: filter?.JobCategory || "",
+                    Age: filter?.Age || "",
+                    JobTitle: filter?.JobTitle || "",
+                    Nationality: filter?.Nationality || "",
+                    Gender: filter?.Gender || "",
+                    MaritalStatus: filter?.MaritalStatus || "",
+                    FromDate: filter?.FromDate || "",
+                    ToDate: filter?.ToDate || "",
+                  });
+                }}
+              >
+                <Input
+                  placeholder="Search"
+                  prefix={<AiOutlineSearch className="large-text" />}
+                  size="large"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <Button className="hidden" htmlType="submit">
+                  Search
+                </Button>
+              </form>
+              <Button
+                type="primary"
                 size="large"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <Button className="hidden" htmlType="submit">
-                Search
+                onClick={() => {
+                  toggleFilterModal(true);
+                }}
+                className={checkFilterActive(filter) && "filter-button--active"}
+              >
+                <FaFilter className="medium-text" />
               </Button>
-            </form>
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => {
-                toggleFilterModal(true);
-              }}
-              className={checkFilterActive(filter) && "filter-button--active"}
-            >
-              <FaFilter className="medium-text" />
-            </Button>
-            {/* <Button
+              {/* <Button
               type="primary"
               size="large"
               onClick={() => {
@@ -406,45 +478,108 @@ const RecruitmentCVParsing = () => {
             >
               + Create
             </Button> */}
-          </div>
-        </m.div>
-        <AnimatePresence>
-          {isFilterModal && (
-            <CVParsingFilter
-              isFilterModal={isFilterModal}
-              toggleFilterModal={toggleFilterModal}
-              filterData={filter}
-              setFilterData={setFilter}
-              getData={refetch}
-              loading={isLoading}
-              nationalityResult={nationalityResult}
-              jobCategoryResult={jobCategoryResult}
-            />
-          )}
-        </AnimatePresence>
-        <m.div variants={item}>
-          <Table
-            dataSource={data}
-            columns={columns}
-            loading={isLoading}
-            pagination={false}
-            rowKey={"id"}
-          />
-          <div className="pagination">
-            <div className="pagination-total">{`Showing ${
-              page === 1 ? 1 : page * 10 - 10 + 1
-            } to ${page * 10 > total ? total : page * 10} of ${total}`}</div>
-            <Pagination
-              current={page}
-              onChange={onChange}
-              total={total}
-              showSizeChanger={false}
-            />
-          </div>
+            </div>
+          </m.div>
+          <Form
+            layout="vertical"
+            className="grid-2"
+            onFinish={handleUpdateUser}
+            form={form}
+            scrollToFirstError={true}
+            initialValues={{
+              batchName: "",
+              assignId: null,
+            }}
+          >
+            <Form.Item
+              name="batchName"
+              label={"Batch Name"}
+              rules={[
+                {
+                  required: true,
+                  message: "No Batch name provided",
+                },
+              ]}
+            >
+              <Input placeholder={"Batch Name"} />
+            </Form.Item>
+            <Form.Item
+              name="assignId"
+              label={"Job"}
+              rules={[
+                {
+                  required: true,
+                  message: "No Job provided",
+                },
+              ]}
+            >
+              <Select placeholder={"Select job"} options={jobsList} />
+            </Form.Item>
+            <div className="grid-2-column">
+              <AnimatePresence>
+                {isFilterModal && (
+                  <CVParsingFilter
+                    isFilterModal={isFilterModal}
+                    toggleFilterModal={toggleFilterModal}
+                    filterData={filter}
+                    setFilterData={setFilter}
+                    getData={refetch}
+                    loading={isLoading}
+                    nationalityResult={nationalityResult}
+                    jobCategoryResult={jobCategoryResult}
+                  />
+                )}
+              </AnimatePresence>
+              <m.div variants={item}>
+                <Table
+                  dataSource={data}
+                  columns={columns}
+                  loading={isLoading}
+                  pagination={false}
+                  rowKey={"id"}
+                  rowSelection={{
+                    selectedRowKeys,
+                    onChange: onSelectChange,
+                    columnWidth: "80px",
+                  }}
+                />
+                <div className="pagination">
+                  <div className="pagination-total">{`Showing ${
+                    page === 1 ? 1 : page * size - size + 1
+                  } to ${
+                    page * size > total ? total : page * size
+                  } of ${total}`}</div>
+                  <Pagination
+                    current={page}
+                    onChange={onChange}
+                    total={total}
+                    pageSize={size}
+                    // showSizeChanger={false}
+                  />
+                </div>
+              </m.div>
+            </div>
+            <div
+              className="flex-at-end medium-margin-top"
+              style={{ gridColumn: "1/3", gap: "1rem" }}
+            >
+              <Button className="" type="text" onClick={() => null}>
+                Cancel
+              </Button>
+              <Button
+                className=""
+                type="primary"
+                htmlType="submit"
+                loading={createLoading}
+              >
+                Create CV batch
+              </Button>
+            </div>
+          </Form>
         </m.div>
       </m.div>
-    </m.div>
+    </div>
   );
 };
 
-export default RecruitmentCVParsing;
+export default BatchCreateMultiple;
