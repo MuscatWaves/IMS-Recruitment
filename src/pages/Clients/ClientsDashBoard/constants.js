@@ -22,10 +22,9 @@ export const cards = (ref) => [
     id: 3,
     icon: RiContactsBookLine,
     title: "CV Batches",
-    path: "/uploadcv",
+    path: "/client/batch/prescreen",
     description: "Manage the CV Batches",
     ref: ref[1],
-    disabled: true,
   },
 ];
 

@@ -15,6 +15,7 @@ import {
   Tooltip,
   Form,
   Select,
+  Alert,
 } from "antd";
 import { HiMail } from "react-icons/hi";
 import dayjs from "dayjs";
@@ -28,10 +29,12 @@ import { RiMessage3Fill } from "react-icons/ri";
 import { AiOutlineExclamationCircle, AiOutlineSearch } from "react-icons/ai";
 import CVParsingFilter from "../../Recruitment/RecruitmentCVParsing/cvParsingFilter";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 import "../../Recruitment/RecruitmentCVParsing/cvParsing.css";
 
 const BatchCreateMultiple = () => {
   const [form] = Form.useForm();
+  const navigateTo = useNavigate();
   const cookies = new Cookies();
   const token = cookies.get("token");
   var localizedFormat = require("dayjs/plugin/localizedFormat");
@@ -480,6 +483,17 @@ const BatchCreateMultiple = () => {
             </Button> */}
             </div>
           </m.div>
+          <Alert
+            message="Warning"
+            description={
+              <div className="bold">
+                Please add the CVs by creating before changing pages. Page
+                change will clear your selection.
+              </div>
+            }
+            type="warning"
+            showIcon
+          />
           <Form
             layout="vertical"
             className="grid-2"
@@ -572,7 +586,14 @@ const BatchCreateMultiple = () => {
                 htmlType="submit"
                 loading={createLoading}
               >
-                Create CV batch
+                Add CVs to batch
+              </Button>
+              <Button
+                className="filter-button--active"
+                loading={createLoading}
+                onClick={() => navigateTo("/recruitment/cvBatch")}
+              >
+                Complete Batch
               </Button>
             </div>
           </Form>

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import Header from "../../../components/Header";
 import Cookies from "universal-cookie";
-import BreadCrumb from "../../../components/BreadCrumb";
 import { container, item } from "../RecruitmentDashBoard/constants";
+import BreadCrumb from "../../../components/BreadCrumb";
 import {
   Button,
   Divider,

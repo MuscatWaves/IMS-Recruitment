@@ -190,6 +190,7 @@ body {
 }
 
 .filter-button--active {
+  color: #fff;
   background-color: #1fc264;
   border: #1fc264 1px solid;
   box-shadow: none;

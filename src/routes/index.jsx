@@ -11,6 +11,10 @@ const ClientDashBoard = lazy(() => import("../pages/Clients/ClientsDashBoard"));
 const ClientJobOpenings = lazy(() =>
   import("../pages/Clients/ClientJobOpenings")
 );
+const ClientCVPreBatch = lazy(() =>
+  import("../pages/Clients/ClientBatch/clientPreScreenBatch.jsx")
+);
+const ClientBatch = lazy(() => import("../pages/Clients/ClientBatch"));
 // const ClientContacts = lazy(() => import("../pages/Clients/ClientContacts"));
 
 // Recruitment
@@ -67,6 +71,10 @@ const Routing = () => {
                   path="/client/register"
                   element={<ClientRegister />}
                 ></Route> */}
+                {/* <Route
+                    path="/client/contacts"
+                    element={<ClientContacts />}
+                  ></Route> */}
                 <Route
                   path="/client/dashboard"
                   element={<ClientDashBoard />}
@@ -75,10 +83,14 @@ const Routing = () => {
                   path="/client/jobs"
                   element={<ClientJobOpenings />}
                 ></Route>
-                {/* <Route
-                  path="/client/contacts"
-                  element={<ClientContacts />}
-                ></Route> */}
+                <Route
+                  path="/client/batch/prescreen"
+                  element={<ClientCVPreBatch />}
+                ></Route>
+                <Route
+                  path="/client/batch/:jobId/:jobName"
+                  element={<ClientBatch />}
+                ></Route>
                 {/* Recruitment */}
                 <Route
                   path="/recruitment"

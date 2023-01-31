@@ -1,0 +1,79 @@
+.client-batch {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.client-cards-main {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 1rem;
+  gap: 2rem;
+}
+
+.recruitment-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.recruitment-filter-nav-header-without {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  background-color: #fff;
+  border-radius: 0 0 12px 12px;
+}
+
+.pagination-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #6b6b6b;
+}
+
+.client-each-card {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  padding: 1.5rem 1rem;
+  padding-bottom: 1.7rem;
+  border-radius: 20px;
+  width: 350px;
+  background-color: rgba(255, 255, 255, 0.452);
+  color: var(--grey-color);
+  box-shadow: var(--shadow-1), var(--shadow-2);
+  transition: 0.3s scale, 0.3s background-color, 0.3s color, 0.3s border-radius,
+    0.3s box-shadow;
+  overflow: hidden;
+}
+
+.dash-card-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px;
+  width: 60px;
+  height: 60px;
+  padding: 0.2rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  color: var(--orange-color);
+}
+
+.client-inside-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
