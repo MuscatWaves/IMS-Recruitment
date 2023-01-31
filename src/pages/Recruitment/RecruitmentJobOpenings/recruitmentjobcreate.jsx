@@ -108,7 +108,7 @@ const RecruitmentJobForm = ({
         getData(filterValues);
       })
       .catch(function (error) {
-        message.error("Something Went Wrong!", "error");
+        message.error("Something Went Wrong!");
         setLoading(false);
       });
   };
@@ -157,6 +157,7 @@ const RecruitmentJobForm = ({
         >
           <Form.Item
             name="client"
+            className="grid-2-column"
             label={"Client"}
             rules={[
               {
@@ -169,6 +170,12 @@ const RecruitmentJobForm = ({
               placeholder="Please select a contact"
               options={clientResult}
               allowClear
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
             />
           </Form.Item>
           <Form.Item

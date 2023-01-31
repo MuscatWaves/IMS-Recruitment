@@ -98,26 +98,6 @@ const RecruitmentCVBatch = () => {
     }
   );
 
-  const { data: recruiterList } = useQuery(
-    ["recruiter"],
-    () =>
-      axios.get("/api/recruitment", {
-        headers: {
-          Authorization: token,
-        },
-      }),
-    {
-      refetchOnWindowFocus: false,
-      select: (data) => {
-        const newData = data.data.data.map((item) => ({
-          label: item.name,
-          value: item.id,
-        }));
-        return newData;
-      },
-    }
-  );
-
   const getData = async (values, page) => {
     setLoading(true);
     setData([]);
@@ -294,7 +274,6 @@ const RecruitmentCVBatch = () => {
           getData={refetch}
           filter={filter}
           jobsList={jobsList}
-          recruiterList={recruiterList}
           statusList={statusList}
         />
       )}

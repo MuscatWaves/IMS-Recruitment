@@ -243,7 +243,6 @@ const ClientJobOpenings = () => {
               className="hidden"
               onSubmit={(e) => {
                 e.preventDefault();
-                console.log(name);
               }}
             >
               <Input

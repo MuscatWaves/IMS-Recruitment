@@ -61,7 +61,6 @@ export const cards = (user) => [
     title: "Resumes",
     path: "/recruitment/resumes",
     description: "Oman Job Resumes of the candidates",
-    disabled: !user.isHead,
   },
   {
     id: 8,

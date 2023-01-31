@@ -12,7 +12,6 @@ const RecruitmentCvBatchForm = ({
   getData,
   filter,
   jobsList,
-  recruiterList,
   statusList,
 }) => {
   const [form] = Form.useForm();

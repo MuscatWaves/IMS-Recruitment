@@ -87,7 +87,7 @@ const RecruitmentJobOpenings = () => {
       enabled: user.isHead,
       select: (data) => {
         const newData = data.data.data.map((item) => ({
-          label: item.name,
+          label: `${item.name} - ${item.clientDetail_clientName}`,
           value: item.id,
         }));
         return newData;
