@@ -494,6 +494,20 @@ const BatchCreateMultiple = () => {
             type="warning"
             showIcon
           />
+          <AnimatePresence>
+            {isFilterModal && (
+              <CVParsingFilter
+                isFilterModal={isFilterModal}
+                toggleFilterModal={toggleFilterModal}
+                filterData={filter}
+                setFilterData={setFilter}
+                getData={refetch}
+                loading={isLoading}
+                nationalityResult={nationalityResult}
+                jobCategoryResult={jobCategoryResult}
+              />
+            )}
+          </AnimatePresence>
           <Form
             layout="vertical"
             className="grid-2"
@@ -539,20 +553,6 @@ const BatchCreateMultiple = () => {
               />
             </Form.Item>
             <div className="grid-2-column">
-              <AnimatePresence>
-                {isFilterModal && (
-                  <CVParsingFilter
-                    isFilterModal={isFilterModal}
-                    toggleFilterModal={toggleFilterModal}
-                    filterData={filter}
-                    setFilterData={setFilter}
-                    getData={refetch}
-                    loading={isLoading}
-                    nationalityResult={nationalityResult}
-                    jobCategoryResult={jobCategoryResult}
-                  />
-                )}
-              </AnimatePresence>
               <m.div variants={item}>
                 <Table
                   dataSource={data}
