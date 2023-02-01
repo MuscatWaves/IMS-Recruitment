@@ -88,7 +88,16 @@ const RecruitmentJobAssignmentForm = ({
                 },
               ]}
             >
-              <Select placeholder={"Select job"} options={jobsList} />
+              <Select
+                placeholder={"Select job"}
+                options={jobsList}
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                showSearch
+              />
             </Form.Item>
           )}
           {editData && (

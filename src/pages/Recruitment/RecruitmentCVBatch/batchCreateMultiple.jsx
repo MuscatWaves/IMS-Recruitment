@@ -369,7 +369,7 @@ const BatchCreateMultiple = () => {
       refetchOnWindowFocus: false,
       select: (data) => {
         const newData = data.data.data.map((item) => ({
-          label: item.jobDesignation,
+          label: item.Jobdesignation,
           value: item.id,
         }));
         return newData;
@@ -527,7 +527,16 @@ const BatchCreateMultiple = () => {
                 },
               ]}
             >
-              <Select placeholder={"Select job"} options={jobsList} />
+              <Select
+                placeholder={"Select job"}
+                options={jobsList}
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                showSearch
+              />
             </Form.Item>
             <div className="grid-2-column">
               <AnimatePresence>

@@ -101,6 +101,12 @@ const RecruitmentClientInformationForm = ({
             <Select
               options={clientsList}
               placeholder={"Enter name of the user"}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              showSearch
             />
           </Form.Item>
           <Form.Item

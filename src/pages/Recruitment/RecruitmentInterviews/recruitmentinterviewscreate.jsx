@@ -206,6 +206,12 @@ const RecruitmentInterviewsForm = ({
               options={clientsList}
               loading={clientFetching}
               disabled={clientFetching}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              showSearch
             />
           </Form.Item>
           <Form.Item
@@ -223,6 +229,12 @@ const RecruitmentInterviewsForm = ({
               options={jobsList}
               loading={jobFetching}
               disabled={jobFetching}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              showSearch
             />
           </Form.Item>
           <Form.Item

@@ -90,7 +90,7 @@ const RecruitmentCVBatch = () => {
       refetchOnWindowFocus: false,
       select: (data) => {
         const newData = data.data.data.map((item) => ({
-          label: item.jobDesignation,
+          label: item.Jobdesignation,
           value: item.id,
         }));
         return newData;
