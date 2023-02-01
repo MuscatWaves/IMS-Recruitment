@@ -201,7 +201,7 @@ const RecruitmentJobAssignment = () => {
               {removeUnderScore(record.statusName)}
             </div>
           );
-        if (record.statusName === "close")
+        if (record.statusName === "closed")
           return (
             <div className="text-green">
               {removeUnderScore(record.statusName)}
