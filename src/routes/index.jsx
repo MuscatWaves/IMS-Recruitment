@@ -27,6 +27,7 @@ const RecruitmentDashboard = lazy(() =>
 const RecruitmentJobOpenings = lazy(() =>
   import("../pages/Recruitment/RecruitmentJobOpenings")
 );
+const RecruiterJobs = lazy(() => import("../pages/Recruitment/RecruitersJobs"));
 // const RecruitmentContacts = lazy(() =>
 //   import("../pages/Recruitment/RecruitmentContacts")
 // );
@@ -103,6 +104,10 @@ const Routing = () => {
                 <Route
                   path="/recruitment/jobs"
                   element={<RecruitmentJobOpenings />}
+                ></Route>
+                <Route
+                  path="/recruiter/jobs"
+                  element={<RecruiterJobs />}
                 ></Route>
                 {/* <Route
                   path="/recruitment/contacts"

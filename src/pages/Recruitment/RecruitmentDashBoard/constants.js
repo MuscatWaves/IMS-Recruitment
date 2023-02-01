@@ -15,6 +15,15 @@ export const cards = (user) => [
     title: "Job Openings",
     path: "/recruitment/jobs",
     description: "Manage the job posting",
+    disabled: !user.isHead,
+  },
+  {
+    id: 2,
+    icon: MdWorkOutline,
+    title: "Assigned Jobs",
+    path: "/recruiter/jobs",
+    description: "Manage the jobs assigned",
+    disabled: user.isHead,
   },
   // {
   //   id: 2,

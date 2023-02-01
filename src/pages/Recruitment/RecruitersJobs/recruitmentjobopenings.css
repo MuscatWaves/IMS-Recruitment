@@ -1,0 +1,27 @@
+.recruitment-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.recruitment-filter-nav-header-without {
+  display: flex;
+  justify-content: space-between;
+  border-radius: 12px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  background-color: #fff;
+  border-radius: 0 0 12px 12px;
+}
+
+.pagination-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #6b6b6b;
+}
