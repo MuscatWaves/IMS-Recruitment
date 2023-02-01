@@ -130,7 +130,10 @@ const RecruitmentJobAssignment = () => {
       },
     };
     try {
-      const Data = await axios.get(`/api/ja?status=${values.status}`, config);
+      const Data = await axios.get(
+        `/api/ja?status=${values.status}&page=${page}`,
+        config
+      );
       if (Data.status === 200) {
         setLoading(false);
         setData(Data.data.data);

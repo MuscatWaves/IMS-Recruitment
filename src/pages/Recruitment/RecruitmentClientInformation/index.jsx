@@ -92,7 +92,7 @@ const RecruitmentClientInformation = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/cd?search=${values.search}&clientName=${values.clientName}&crNumber=${values.crNumber}&clientEmail=${values.clientEmail}`,
+        `/api/cd?search=${values.search}&clientName=${values.clientName}&crNumber=${values.crNumber}&clientEmail=${values.clientEmail}&page=${page}`,
         config
       );
       if (Data.status === 200) {

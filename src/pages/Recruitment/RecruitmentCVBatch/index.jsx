@@ -108,7 +108,7 @@ const RecruitmentCVBatch = () => {
     };
     try {
       const Data = await axios.get(
-        `/api/batch?search=${values.search}`,
+        `/api/batch?search=${values.search}&page=${page}`,
         config
       );
       if (Data.status === 200) {
