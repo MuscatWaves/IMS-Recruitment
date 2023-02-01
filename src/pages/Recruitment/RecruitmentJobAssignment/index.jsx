@@ -154,7 +154,7 @@ const RecruitmentJobAssignment = () => {
     {
       title: "Designation",
       render: (record) => (
-        <div className="text-grey">{record.jobDesignation}</div>
+        <div className="text-grey">{record.Jobdesignation}</div>
       ),
     },
     {
