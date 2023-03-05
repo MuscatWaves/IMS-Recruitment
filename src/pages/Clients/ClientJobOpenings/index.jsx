@@ -176,7 +176,7 @@ const ClientJobOpenings = () => {
         message.success("The data has been sucessfully deleted");
         toggleDeleteModal(false);
         setDeletionData("");
-        refetch(filter);
+        refetch();
         setDeleteLoading(false);
       })
       .catch(function (response) {
