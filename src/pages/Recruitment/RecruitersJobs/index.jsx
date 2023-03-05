@@ -246,7 +246,7 @@ const RecruiterJobs = () => {
         message.success("The data has been sucessfully deleted");
         toggleDeleteModal(false);
         setDeletionData("");
-        refetch();
+        refetch(filter);
         setDeleteLoading(false);
       })
       .catch(function (response) {
