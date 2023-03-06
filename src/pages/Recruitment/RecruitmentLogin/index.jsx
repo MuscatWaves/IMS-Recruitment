@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ojimage from "../../../images/oj-small.png";
+import ojimage from "../../../images/mw-small.png";
 import isEmail from "validator/lib/isEmail";
 import axios from "axios";
 import Cookies from "universal-cookie";

@@ -1,5 +1,5 @@
 import React from "react";
-import ojimage from "../../images/oj-small.png";
+import ojimage from "../../images/mw-small.png";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import Authentication from "../../components/Authentication";
